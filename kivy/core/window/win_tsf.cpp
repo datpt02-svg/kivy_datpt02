@@ -3,6 +3,7 @@
 #include "win_tsf.h"
 #include <algorithm>
 #include <cstring>
+#include <olectl.h>   // CONNECT_E_NOCONNECTION
 
 // The single fixed view cookie used throughout this implementation.
 static const TsViewCookie VIEW_COOKIE = 1;
@@ -70,7 +71,7 @@ KivyTSFManager *KivyTSFManager::Create(void *hwnd_ptr) {
     ITfContext *pContext = NULL;
     TfEditCookie editCookie = 0;
     hr = pDocMgr->CreateContext(clientId, 0,
-                                static_cast<ITfTextStoreACP2 *>(pMgr),
+                                static_cast<ITextStoreACP2 *>(pMgr),
                                 &pContext, &editCookie);
     if (FAILED(hr)) {
         pMgr->Release();
@@ -205,9 +206,9 @@ STDMETHODIMP KivyTSFManager::QueryInterface(REFIID riid, void **ppvObj) {
     if (!ppvObj) return E_INVALIDARG;
     *ppvObj = NULL;
     if (IsEqualIID(riid, IID_IUnknown) ||
-        IsEqualIID(riid, IID_ITfTextStoreACP) ||
-        IsEqualIID(riid, IID_ITfTextStoreACP2)) {
-        *ppvObj = static_cast<ITfTextStoreACP2 *>(this);
+        IsEqualIID(riid, IID_ITextStoreACP) ||
+        IsEqualIID(riid, IID_ITextStoreACP2)) {
+        *ppvObj = static_cast<ITextStoreACP2 *>(this);
     } else if (IsEqualIID(riid, IID_ITfContextOwnerCompositionSink)) {
         *ppvObj = static_cast<ITfContextOwnerCompositionSink *>(this);
     } else {
