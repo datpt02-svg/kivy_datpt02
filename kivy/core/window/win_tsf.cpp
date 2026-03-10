@@ -9,6 +9,27 @@
 static const TsViewCookie VIEW_COOKIE = 1;
 
 // ---------------------------------------------------------------------------
+// Dynamic loading of TF_CreateThreadMgr from msctf.dll.
+// This avoids the hard linker dependency on msctf.lib which may not be
+// present in all Windows SDK installations.
+// ---------------------------------------------------------------------------
+typedef HRESULT (WINAPI *PFN_TF_CreateThreadMgr)(ITfThreadMgr **pptim);
+
+static HMODULE s_hMsctf = NULL;
+static PFN_TF_CreateThreadMgr s_pfnTFCreate = NULL;
+
+static HRESULT TF_CreateThreadMgr_dynamic(ITfThreadMgr **pptim) {
+    if (!s_pfnTFCreate) {
+        s_hMsctf = LoadLibraryW(L"msctf.dll");
+        if (!s_hMsctf) return E_NOTIMPL;
+        s_pfnTFCreate = (PFN_TF_CreateThreadMgr)GetProcAddress(s_hMsctf,
+                                                                 "TF_CreateThreadMgr");
+        if (!s_pfnTFCreate) return E_NOTIMPL;
+    }
+    return s_pfnTFCreate(pptim);
+}
+
+// ---------------------------------------------------------------------------
 // Construction / Destruction
 // ---------------------------------------------------------------------------
 
@@ -35,7 +56,7 @@ KivyTSFManager *KivyTSFManager::Create(void *hwnd_ptr) {
     HWND hwnd = reinterpret_cast<HWND>(hwnd_ptr);
     // COM must already be initialised on this thread (SDL3 does this).
     ITfThreadMgr *pThreadMgr = NULL;
-    HRESULT hr = TF_CreateThreadMgr(&pThreadMgr);
+    HRESULT hr = TF_CreateThreadMgr_dynamic(&pThreadMgr);
     if (FAILED(hr) || !pThreadMgr)
         return NULL;
 
@@ -206,10 +227,10 @@ STDMETHODIMP KivyTSFManager::QueryInterface(REFIID riid, void **ppvObj) {
     if (!ppvObj) return E_INVALIDARG;
     *ppvObj = NULL;
     if (IsEqualIID(riid, IID_IUnknown) ||
-        IsEqualIID(riid, IID_ITextStoreACP) ||
-        IsEqualIID(riid, IID_ITextStoreACP2)) {
+        IsEqualIID(riid, __uuidof(ITextStoreACP)) ||
+        IsEqualIID(riid, __uuidof(ITextStoreACP2))) {
         *ppvObj = static_cast<ITextStoreACP2 *>(this);
-    } else if (IsEqualIID(riid, IID_ITfContextOwnerCompositionSink)) {
+    } else if (IsEqualIID(riid, __uuidof(ITfContextOwnerCompositionSink))) {
         *ppvObj = static_cast<ITfContextOwnerCompositionSink *>(this);
     } else {
         return E_NOINTERFACE;
@@ -235,11 +256,11 @@ STDMETHODIMP_(ULONG) KivyTSFManager::Release() {
 
 STDMETHODIMP KivyTSFManager::AdviseSink(REFIID riid, IUnknown *punk,
                                          DWORD dwMask) {
-    if (!IsEqualIID(riid, IID_ITextStoreACPSink))
+    if (!IsEqualIID(riid, __uuidof(ITextStoreACPSink)))
         return E_INVALIDARG;
 
     ITextStoreACPSink *pNewSink = NULL;
-    HRESULT hr = punk->QueryInterface(IID_ITextStoreACPSink,
+    HRESULT hr = punk->QueryInterface(__uuidof(ITextStoreACPSink),
                                       reinterpret_cast<void **>(&pNewSink));
     if (FAILED(hr))
         return hr;
@@ -262,7 +283,7 @@ STDMETHODIMP KivyTSFManager::UnadviseSink(IUnknown *punk) {
     if (!m_pSink)
         return CONNECT_E_NOCONNECTION;
     ITextStoreACPSink *pSink = NULL;
-    HRESULT hr = punk->QueryInterface(IID_ITextStoreACPSink,
+    HRESULT hr = punk->QueryInterface(__uuidof(ITextStoreACPSink),
                                       reinterpret_cast<void **>(&pSink));
     if (FAILED(hr))
         return hr;
@@ -606,7 +627,7 @@ STDMETHODIMP KivyTSFManager::OnUpdateComposition(
 
     // Convert ITfRange to ACP positions via ITfRangeACP.
     ITfRangeACP *pRangeACP = NULL;
-    if (SUCCEEDED(pRange->QueryInterface(IID_ITfRangeACP,
+    if (SUCCEEDED(pRange->QueryInterface(__uuidof(ITfRangeACP),
                                          reinterpret_cast<void **>(&pRangeACP)))) {
         LONG acpStart = 0, cch = 0;
         if (SUCCEEDED(pRangeACP->GetExtent(&acpStart, &cch)) && cch > 0) {

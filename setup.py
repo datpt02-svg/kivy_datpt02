@@ -1205,7 +1205,7 @@ if c_options['use_sdl3'] and sdl3_flags:
         sources['core/window/_win_tsf.pyx'] = merge(
             base_flags,
             {
-                'libraries': ['msctf'],
+                'libraries': [],  # msctf loaded dynamically via LoadLibrary
                 'extra_compile_args': [cpp_std_flag],
                 'depends': ['core/window/win_tsf.cpp', 'core/window/win_tsf.h'],
                 'language': 'c++',
