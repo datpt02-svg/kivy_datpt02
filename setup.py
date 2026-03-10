@@ -1188,6 +1188,20 @@ if c_options['use_sdl3'] and sdl3_flags:
         base_flags, sdl3_flags, sdl3_depends, _extra_args_cpp
     )
 
+    if platform == 'win32':
+        import distutils.ccompiler
+        compiler_type = distutils.ccompiler.get_default_compiler()
+        cpp_std_flag = '/std:c++17' if compiler_type == 'msvc' else '-std=c++17'
+        sources['core/window/_win_tsf.pyx'] = merge(
+            base_flags,
+            {
+                'libraries': ['msctf'],
+                'extra_compile_args': [cpp_std_flag],
+                'depends': ['core/window/win_tsf.cpp', 'core/window/win_tsf.h'],
+                'language': 'c++',
+            }
+        )
+
 if c_options['use_pangoft2'] in (None, True) and platform not in (
         'android', 'ios', 'win32'):
     pango_flags = pkgconfig('pangoft2')

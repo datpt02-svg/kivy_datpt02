@@ -2243,6 +2243,38 @@ class WindowBase(EventDispatcher):
         '''
         pass
 
+    def update_tsf_content(self, text, cursor_index,
+                           sel_start=None, sel_end=None):
+        '''Push the current text-input content to the Windows TSF document
+        store so that IMEs have accurate surrounding-text context.
+
+        On non-Windows platforms or when TSF is unavailable this is a no-op.
+
+        :Parameters:
+            `text`: str
+                Full content of the TextInput.
+            `cursor_index`: int
+                Absolute character offset of the cursor.
+            `sel_start`: int or None
+                Start of the selection (defaults to *cursor_index*).
+            `sel_end`: int or None
+                End of the selection (defaults to *cursor_index*).
+        '''
+
+    def update_tsf_cursor_rect(self, x, y, w=1, h=16):
+        '''Provide the screen-space bounding rectangle of the text cursor to
+        the Windows TSF framework so that the IME candidate window is
+        positioned correctly.
+
+        On non-Windows platforms or when TSF is unavailable this is a no-op.
+
+        :Parameters:
+            `x`, `y`: int
+                Screen coordinates of the cursor's top-left corner.
+            `w`, `h`: int
+                Width and height of the cursor rectangle in pixels.
+        '''
+
     dpi = NumericProperty(96.)
     '''Return the DPI of the screen as computed by the window. If the
     implementation doesn't support DPI lookup, it's 96.

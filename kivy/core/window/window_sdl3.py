@@ -341,6 +341,12 @@ class WindowSDL(WindowBase):
         if self.initialized:
             return
 
+        # On Windows, initialise the TSF document store for deep IME
+        # integration.  Done here (after super().create_window()) so the HWND
+        # is stable and the Python event dispatch machinery is ready.
+        if platform == 'win':
+            self._win.init_tsf(self._on_tsf_text)
+
         # auto add input provider
         Logger.info('Window: auto add sdl3 input provider')
         SDL3MotionEventProvider.win = self
@@ -881,3 +887,48 @@ class WindowSDL(WindowBase):
 
     def get_system_theme(self):
         return self._win.get_system_theme()
+
+    # ------------------------------------------------------------------
+    # TSF (Text Services Framework) – Windows IME deep integration
+    # ------------------------------------------------------------------
+
+    def _on_tsf_text(self, text, is_commit):
+        """Callback invoked by KivyTSFManager when a composition event occurs.
+
+        *text* is the current composition string; *is_commit* is True when the
+        composition is committed (the final text will also arrive via the
+        SDL_EVENT_TEXT_INPUT path, so we only clear the composition preview).
+        """
+        if is_commit:
+            # Clear composition preview.  The committed text arrives separately
+            # via on_textinput (SDL_EVENT_TEXT_INPUT).
+            self.dispatch('on_textedit', '')
+        else:
+            self.dispatch('on_textedit', text)
+
+    def update_tsf_content(self, text, cursor_index,
+                           sel_start=None, sel_end=None):
+        """Push current TextInput content to the TSF document store.
+
+        Call this after any text or cursor change so the IME has accurate
+        surrounding-text context for context-aware input.
+        """
+        tsf = self._win.get_tsf_bridge()
+        if tsf is None:
+            return
+        if sel_start is None:
+            sel_start = cursor_index
+        if sel_end is None:
+            sel_end = cursor_index
+        tsf.update_content(text, cursor_index, sel_start, sel_end)
+
+    def update_tsf_cursor_rect(self, x, y, w=1, h=16):
+        """Provide the screen-space bounding rect of the text cursor.
+
+        The TSF framework uses this to position the IME candidate window next
+        to the insertion point.  Coordinates must be in screen (not widget)
+        space.
+        """
+        tsf = self._win.get_tsf_bridge()
+        if tsf is not None:
+            tsf.update_cursor_rect(int(x), int(y), int(w), int(h))

@@ -2141,6 +2141,9 @@ class TextInput(FocusBehavior, Widget):
         if self.focus:
             self._trigger_cursor_reset()
         self._trigger_update_graphics()
+        # Notify TSF of the new cursor position so the IME candidate window
+        # follows the cursor.  _update_tsf() is a no-op on non-Windows.
+        self._update_tsf()
 
     def _delete_line(self, idx):
         """Delete current line, and fix cursor position"""
@@ -3043,6 +3046,9 @@ class TextInput(FocusBehavior, Widget):
         if self._selection:
             self.delete_selection()
         self.insert_text(text, False)
+        # After committing text, sync the TSF document store so the IME has
+        # accurate surrounding context for the next composition.
+        self._update_tsf()
 
     # current IME composition in progress by the IME system, or '' if nothing
     _ime_composition = StringProperty('')
@@ -3052,10 +3058,43 @@ class TextInput(FocusBehavior, Widget):
     def _bind_keyboard(self):
         super()._bind_keyboard()
         Window.bind(on_textedit=self.window_on_textedit)
+        # Push current state to TSF so the IME has context immediately.
+        self._update_tsf()
 
     def _unbind_keyboard(self):
         super()._unbind_keyboard()
         Window.unbind(on_textedit=self.window_on_textedit)
+
+    def _update_tsf(self):
+        """Push current content and cursor rect to the Windows TSF store.
+
+        Called after any text or cursor change so that the IME has up-to-date
+        surrounding-text context and can position its candidate window
+        correctly.  On non-Windows platforms Window.update_tsf_* are no-ops.
+        """
+        if not self.focus:
+            return
+        # -- content update ---------------------------------------------------
+        ci = self.cursor_index()
+        sel_start = ci
+        sel_end = ci
+        if self._selection:
+            from_idx = self.cursor_index(self._selection_from)
+            to_idx = self.cursor_index(self._selection_to)
+            sel_start = min(from_idx, to_idx)
+            sel_end = max(from_idx, to_idx)
+        Window.update_tsf_content(self.text, ci, sel_start, sel_end)
+
+        # -- cursor rect update (screen coordinates) --------------------------
+        cx, cy_kivy = self.cursor_pos        # widget-space (y=0 at bottom)
+        # Convert widget → window → screen.
+        # to_window() gives window coords (y=0 at bottom of Kivy window).
+        wx, wy_kivy = self.to_window(cx, cy_kivy)
+        # Flip Y so that y=0 is at the top of the screen (Win32 convention).
+        screen_y = int(Window.height - wy_kivy)
+        screen_x = int(wx)
+        cursor_h = int(self.line_height)
+        Window.update_tsf_cursor_rect(screen_x, screen_y, 1, cursor_h)
 
     def window_on_textedit(self, window, ime_input):
         text_lines = self._lines or ['']
@@ -3086,6 +3125,8 @@ class TextInput(FocusBehavior, Widget):
             )
         self._ime_composition = ime_input
         self._ime_cursor = self.cursor
+        # Keep TSF document store in sync so the IME has current context.
+        self._update_tsf()
 
     def on__hint_text(self, instance, value):
         self._refresh_hint_text()

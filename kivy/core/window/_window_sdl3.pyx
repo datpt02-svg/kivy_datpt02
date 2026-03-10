@@ -44,6 +44,8 @@ cdef class _WindowSDL3Storage:
     cdef EGLANGLE egl_angle_storage
     cdef bint _is_shapable
     cdef bint _first_swap_done
+    # TSF bridge for Windows IME deep integration (None on non-Windows)
+    cdef object _tsf_bridge
 
     def __cinit__(self):
         self.win = NULL
@@ -57,6 +59,7 @@ cdef class _WindowSDL3Storage:
         self.egl_angle_storage = None
         self._is_shapable = False
         self._first_swap_done = False
+        self._tsf_bridge = None
 
     def set_event_filter(self, event_filter):
         self.event_filter = event_filter
@@ -641,6 +644,31 @@ cdef class _WindowSDL3Storage:
         
         return window_info.native_handle
 
+    def init_tsf(self, composition_callback):
+        """Initialise the Windows TSF bridge (Windows only).
+
+        *composition_callback(text, is_commit)* is called from C++ when the
+        IME updates or commits the composition string.
+        """
+        if platform != 'win':
+            return
+        try:
+            from kivy.core.window._win_tsf import WinTSFBridge
+            hwnd = self.get_native_handle()
+            if hwnd is None:
+                Logger.warning('WindowSDL: TSF init skipped – no HWND')
+                return
+            bridge = WinTSFBridge()
+            bridge.init_tsf(hwnd, composition_callback)
+            self._tsf_bridge = bridge
+        except Exception as e:
+            Logger.warning('WindowSDL: TSF unavailable: %s' % e)
+            self._tsf_bridge = None
+
+    def get_tsf_bridge(self):
+        """Return the WinTSFBridge instance, or None if not available."""
+        return self._tsf_bridge
+
     def is_window_shapable(self):
         return self._is_shapable
 
@@ -819,12 +847,18 @@ cdef class _WindowSDL3Storage:
                 mActivity.changeKeyboard(input_type_value)
 
             SDL_StartTextInput(self.win)
+            # Enable TSF document focus so the IME can read document context.
+            if self._tsf_bridge is not None:
+                self._tsf_bridge.enable()
         finally:
             PyMem_Free(<void *>rect)
 
     def hide_keyboard(self):
         if SDL_TextInputActive(self.win):
             SDL_StopTextInput(self.win)
+            # Remove TSF document focus.
+            if self._tsf_bridge is not None:
+                self._tsf_bridge.disable()
 
     def is_keyboard_shown(self):
         return SDL_TextInputActive(self.win)
@@ -968,8 +1002,12 @@ cdef class _WindowSDL3Storage:
             s = event.text.text.decode('utf-8')
             return ('textinput', s)
         elif event.type == SDL_EVENT_TEXT_EDITING:
-            s = event.edit.text.decode('utf-8')
-            return ('textedit', s)
+            # On Windows, when TSF is active, composition events come via the
+            # KivyTSFManager C++ callbacks instead of SDL_EVENT_TEXT_EDITING.
+            # Suppress the SDL event to avoid duplicate composition display.
+            if self._tsf_bridge is None:
+                s = event.edit.text.decode('utf-8')
+                return ('textedit', s)
         elif event.type == SDL_EVENT_DROP_FILE:
             # return ('dropfile', event.drop.file)
             pass
