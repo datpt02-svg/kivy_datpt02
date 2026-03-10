@@ -31,6 +31,7 @@ is delivered via SDL_EVENT_TEXT_INPUT / on_textinput as usual).
 """
 
 from libc.stdint cimport uintptr_t
+from libc.stddef cimport wchar_t
 
 # ---------------------------------------------------------------------------
 # C++ declarations
