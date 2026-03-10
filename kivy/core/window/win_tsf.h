@@ -118,8 +118,9 @@ public:
     STDMETHODIMP GetTextExt(TsViewCookie vcView, LONG acpStart, LONG acpEnd,
                              RECT *prc, BOOL *pfClipped) override;
     STDMETHODIMP GetScreenExt(TsViewCookie vcView, RECT *prc) override;
-    // GetWnd is part of ITfTextStoreACP2 (not ACP)
-    STDMETHODIMP GetWnd(TsViewCookie vcView, HWND *phwnd) override;
+    // GetWnd: present in some SDK versions of ITextStoreACP2; declared without
+    // override to avoid C3668 on SDKs that don't include it as a pure virtual.
+    STDMETHODIMP GetWnd(TsViewCookie vcView, HWND *phwnd);
 
     // --- ITfContextOwnerCompositionSink --------------------------------------
     STDMETHODIMP OnStartComposition(ITfCompositionView *pComposition,
