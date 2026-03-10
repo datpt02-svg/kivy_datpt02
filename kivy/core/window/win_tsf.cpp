@@ -30,7 +30,8 @@ KivyTSFManager::~KivyTSFManager() {
 // ---------------------------------------------------------------------------
 
 /* static */
-KivyTSFManager *KivyTSFManager::Create(HWND hwnd) {
+KivyTSFManager *KivyTSFManager::Create(void *hwnd_ptr) {
+    HWND hwnd = reinterpret_cast<HWND>(hwnd_ptr);
     // COM must already be initialised on this thread (SDL3 does this).
     ITfThreadMgr *pThreadMgr = NULL;
     HRESULT hr = TF_CreateThreadMgr(&pThreadMgr);

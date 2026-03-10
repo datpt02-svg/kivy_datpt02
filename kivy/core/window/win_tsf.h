@@ -11,7 +11,7 @@
 // text      - composition string (may be empty to clear composition)
 // is_commit - true when text is being committed (composition ended)
 typedef void (*KivyTSFTextCallback)(void *user_data, const wchar_t *text,
-                                    bool is_commit);
+                                    int is_commit);
 
 // KivyTSFManager: registers a TSF text-store document on a given HWND so that
 // Windows IMEs (via TSF) can read surrounding text and correctly position the
@@ -19,14 +19,14 @@ typedef void (*KivyTSFTextCallback)(void *user_data, const wchar_t *text,
 //
 // Thread-safety: all public methods must be called from the same thread that
 // called Create() (the main Kivy/SDL3 UI thread).
-class KivyTSFManager : public ITfTextStoreACP2,
+class KivyTSFManager : public ITextStoreACP2,
                        public ITfContextOwnerCompositionSink {
 public:
     // --- Lifecycle -----------------------------------------------------------
 
     // Create and fully initialise a TSF store bound to |hwnd|.
     // Returns NULL on failure.
-    static KivyTSFManager *Create(HWND hwnd);
+    static KivyTSFManager *Create(void *hwnd);
 
     // Release all TSF resources. After Destroy() the object must not be used.
     void Destroy();
