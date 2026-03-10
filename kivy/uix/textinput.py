@@ -3079,10 +3079,8 @@ class TextInput(FocusBehavior, Widget):
         sel_start = ci
         sel_end = ci
         if self._selection:
-            from_idx = self.cursor_index(self._selection_from)
-            to_idx = self.cursor_index(self._selection_to)
-            sel_start = min(from_idx, to_idx)
-            sel_end = max(from_idx, to_idx)
+            sel_start = min(self._selection_from, self._selection_to)
+            sel_end = max(self._selection_from, self._selection_to)
         Window.update_tsf_content(self.text, ci, sel_start, sel_end)
 
         # -- cursor rect update (screen coordinates) --------------------------

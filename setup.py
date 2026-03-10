@@ -1017,6 +1017,17 @@ def determine_sdl3():
         flags = merge(flags, sdl3_flags)
 
     # ensure headers for all the SDL3 and sub libraries are available
+    # SDL3 headers are inside subdirectories (SDL3/, SDL3_ttf/, etc.)
+    extra_sdl3_inc = []
+    for d in flags.get('include_dirs', []):
+        for sub in ('SDL3', 'SDL3_ttf', 'SDL3_image', 'SDL3_mixer'):
+            p = os.path.join(d, sub)
+            if os.path.isdir(p):
+                extra_sdl3_inc.append(p)
+    if extra_sdl3_inc:
+        flags.setdefault('include_dirs', [])
+        flags['include_dirs'] = extra_sdl3_inc + flags['include_dirs']
+
     libs_to_check = ['SDL', 'SDL_mixer', 'SDL_ttf', 'SDL_image']
     can_compile = True
     for lib in libs_to_check:
@@ -1177,7 +1188,6 @@ if c_options['use_sdl3'] and sdl3_flags:
         _extra_args_cpp = {}
     for source_file in ('core/window/_window_sdl3.pyx',
                         'core/text/_text_sdl3.pyx',
-                        'core/audio_output/audio_sdl3.pyx',
                         'core/clipboard/_clipboard_sdl3.pyx'):
 
         sources[source_file] = merge(
