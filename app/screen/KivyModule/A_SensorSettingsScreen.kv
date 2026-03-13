@@ -1,0 +1,842 @@
+<FormLabelDiv@BoxLayout>:
+    orientation: 'vertical'
+    size_hint_y: None
+    size_hint_x: 0.5
+    height: self.minimum_height
+    spacing: dp(30)
+
+    label_key: ''
+    required: False
+    FormLabel:
+        markup: True
+        text: app.lang.get(root.label_key, required=root.required) if root.required else app.lang.get(root.label_key)
+        size_hint_x: 1
+        pos_hint: {'center_y': 0.5}
+        halign: 'left'
+        valign: 'middle'
+        padding: [0, dp(20), 0, 0]
+
+<FormMarginGroup@FormGroup>:
+    label_key: ''
+
+    size_hint_x: None
+    width: dp(250)
+    spacing: dp(10)
+    FormLabel:
+        text: app.lang.get(root.label_key)
+        bold: False
+        width: dp(50)
+        size_hint_x: None
+        pos_hint: {'center_y': 0.5}
+        halign: 'left'
+    FormInput:
+        id: margin_input
+        size_hint_x: None
+        width: dp(120)
+        input_filter: 'int'
+        validation_type: 'int'
+
+        hint_text: app.lang.get('margin_hint_A')
+
+
+<ReadOnlyInfoGroup@FormGroup>:
+    text_key: ''
+    height: dp(40)
+    Label:
+        color: COLORS['MEDIUM_GRAY']
+        size_hint_x: None
+        size: self.texture_size
+        font_size: dp(15.2)
+        bold: True
+        text: app.lang.get(root.text_key)
+    FormLabel:
+        id: value_label
+        bold: False
+        text_key: ''
+        text: app.lang.get(self.text_key) if self.text_key else self.text
+
+
+<SubsectionContainer@BoxLayout>:
+    subsection_index: 0
+    current_subsection: 0
+    has_spacing: True
+    orientation: 'vertical'
+    size_hint_y: None
+    size_hint_x: 1 if self.current_subsection == self.subsection_index else None
+    height: self.minimum_height if self.current_subsection == self.subsection_index else 0
+    pos_hint: {'center_x': 0.5} if self.current_subsection == self.subsection_index else {'center_x': -100}
+    spacing: dp(25) if self.has_spacing else dp(0)
+    padding: [0, dp(15), 0, 0]
+
+<SensorSettingsScreen>:
+    name: 'screen_A_sensor_settings'
+    current_subsection: 0
+
+    ScrollView:
+        id: scroll_screen_A_sensor_settings
+        bar_width: dp(10)
+        scroll_type: ['bars']
+        effect_cls: "ScrollEffect"
+
+        FormContent:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: self.minimum_height
+            padding: dp(30)
+
+            BoxLayout:
+                id: main_container
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(25)
+
+                PageHeader:
+                    text: app.lang.get('sensor_settings_title_A')
+
+                SubSectionHeader:
+                    text: app.lang.get('registered_list_title_A')
+
+                DataTableWithPagination:
+                    id: settings_table_a_sensor_settings
+                    DataTable:
+                        id: data_table_a_sensor_settings
+                        cols_width: [-1, 400, 450]
+                        cols: 3
+                    PaginationControls:
+                        id: pagination_box_a_sensor_settings
+
+                Separator:
+
+                AnchorLayout:
+                    id: step_indicator_container
+                    size_hint_y: None
+                    height: dp(60)
+                    anchor_x: 'center'
+
+            SubsectionContainer:
+                subsection_index: 0
+                current_subsection: root.current_subsection
+
+                SectionHeader:
+                    text: app.lang.get('subsection_A1_title')
+
+
+
+                BoxLayout:
+                    orientation: 'horizontal'
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: dp(30)
+                    FormLabelDiv:
+                        label_key: 'setting_name_label_A'
+                        required: True
+                        FormGroup:
+                            spacing: dp(15)
+                            orientation: 'vertical'
+                            FormInput:
+                                id: a_setting_name
+                                size_hint_x: 1
+                                hint_text: app.lang.get('setting_name_hint_A')
+                                validation_type: 'string'
+                                max_length: 100
+                                allow_none: False
+                            ErrorMessage:
+                                text: app.lang.get(a_setting_name.error_message).format(max_len=a_setting_name.max_length)
+
+                    FormLabelDiv:
+                        label_key: 'intrinsic_select_label_A'
+                        required: True
+                        FormGroup:
+                            spacing: dp(15)
+                            orientation: 'vertical'
+                            FormSpinner:
+                                id: a_intrinsic_json_select
+                                hint_text: app.lang.get('select_placeholder')
+                                size_hint_x: 1
+                                allow_none: False
+                            ErrorMessage:
+                                text: app.lang.get(a_intrinsic_json_select.error_message)
+
+                BoxLayout:
+                    orientation: 'horizontal'
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: dp(30)
+
+                    FormLabelDiv:
+                        label_key: 'pattern_cols_label_A'
+                        required: True
+                        FormGroup:
+                            spacing: dp(15)
+                            orientation: 'vertical'
+                            FormInput:
+                                id: a_pattern_cols
+                                input_filter: 'int'
+                                size_hint_x: 1
+                                text: '5'
+                                hint_text: app.lang.get('pattern_cols_hint_A')
+                                validation_type: 'int'
+                                min_value: 2
+                                max_value: 10
+                                allow_none: False
+                            ErrorMessage:
+                                text: app.lang.get(a_pattern_cols.error_message).format(min_val=a_pattern_cols.min_value, max_val=a_pattern_cols.max_value)
+
+
+                    FormLabelDiv:
+                        label_key: 'pattern_rows_label_A'
+                        required: True
+                        FormGroup:
+                            spacing: dp(15)
+                            orientation: 'vertical'
+                            FormInput:
+                                id: a_pattern_rows
+                                input_filter: 'int'
+                                size_hint_x: 1
+                                text: '3'
+                                hint_text: app.lang.get('pattern_rows_hint_A')
+                                validation_type: 'int'
+                                min_value: 2
+                                max_value: 10
+                                allow_none: False
+
+                            ErrorMessage:
+                                text: app.lang.get(a_pattern_rows.error_message).format(min_val=a_pattern_rows.min_value, max_val=a_pattern_rows.max_value)
+
+                BoxLayout:
+                    orientation: 'horizontal'
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: dp(30)
+
+                    FormLabelDiv:
+                        label_key: 'delta_t_label_A'
+                        required: True
+                        FormGroup:
+                            spacing: dp(15)
+                            orientation: 'vertical'
+                            FormInput:
+                                id: a_delta_t
+                                input_filter: 'int'
+                                hint_text: app.lang.get('delta_t_hint_A')
+                                size_hint_x: 1
+                                width: dp(120)
+                                text: '15000'
+                                validation_type: 'int'
+                                min_value: 1
+                                max_value: 100000
+                                allow_none: False
+
+
+                            ErrorMessage:
+                                text: app.lang.get(a_delta_t.error_message).format(min_val=a_delta_t.min_value, max_val=a_delta_t.max_value)
+
+
+
+                    FormLabelDiv:
+                        label_key: 'bias_select_label_A'
+                        required: True
+                        FormGroup:
+                            spacing: dp(15)
+                            orientation: 'vertical'
+                            FormSpinner:
+                                id: a_bias_path_select
+                                hint_text: app.lang.get('select_placeholder')
+                                size_hint_x: 1
+                                allow_none: False
+                            ErrorMessage:
+                                text: app.lang.get(a_bias_path_select.error_message)
+
+
+
+
+            SubsectionContainer:
+                subsection_index: 1
+                current_subsection: root.current_subsection
+
+                SectionHeader:
+                    text: app.lang.get('subsection_A2_title')
+
+
+
+                FormGroup:
+                    size_hint_y: None
+                    FormLabel:
+                        text: app.lang.get('dot_pattern_path_label_A')
+                        size_hint_x: None
+                        width: dp(300)
+                        pos_hint: {'center_y': 1}
+                        halign: 'left'
+                        padding: [0, dp(20), 0, 0]
+
+
+                    FormGroup:
+                        spacing: dp(15)
+                        orientation: 'vertical'
+                        ImageSelectionListWidget:
+                            id: a_dot_pattern_list
+                            height: dp(198)
+                            GridLayout:
+                                cols: 1
+                                size_hint_y: None
+                                height: self.minimum_height
+                                spacing: dp(1)
+                                padding: [dp(10), dp(10), dp(10), dp(10)]
+                        ErrorMessage:
+                            id: a_dot_pattern_list_error
+                            text: app.lang.get(self.error_message)
+
+
+
+
+                FormGroup:
+                    FormLabel:
+                        text: app.lang.get('resize_dot_pattern_label_A')
+                        size_hint_x: None
+                        width: dp(300)
+                        pos_hint: {'center_y': 0.5}
+                        halign: 'left'
+                    FormGroup:
+                        spacing: dp(15)
+                        pos_hint: {'center_y': 0.3}
+                        orientation: 'vertical'
+                        FormInput:
+                            id: a_resize_dot_pattern
+                            hint_text: app.lang.get('resize_dot_pattern_hint_A')
+                            input_filter: 'int'
+                            validation_type: 'int'
+                            min_value: 0
+                            max_value: 300
+                            on_text: root.sync_resize_speed_pattern(self.text)
+                        ErrorMessage:
+                            text: app.lang.get(a_resize_dot_pattern.error_message).format(min_val=a_resize_dot_pattern.min_value, max_val=a_resize_dot_pattern.max_value)
+
+
+                SubSectionHeader:
+                    text: app.lang.get('sub_subsection_A21_title')
+
+                FormGroup:
+                    size_hint_y: None
+                    height: self.minimum_height
+                    FormLabel:
+                        text: app.lang.get('dot_score_label_A')
+                        size_hint_x: None
+                        width: dp(303)
+                        font_size: dp(15.2)
+                        bold: True
+                    FormLabel:
+                        size_hint_x: 1
+                        bold: False
+                        text: str(root.dot_score) if root.dot_score else ''
+
+
+                FormGroup:
+                    FormLabel:
+                        text: app.lang.get('save_to_dot_box_dir_label_A')
+                        size_hint_x: None
+                        width: dp(303)
+                        pos_hint: {'center_y': 0.5}
+                        halign: 'left'
+                    FormCheckBox:
+                        id: save_to_dot_box
+                        text: app.lang.get('save_checkbox_label_A')
+                        spacing: dp(10)
+                        enable_conditional_layout: True
+                        target_id: "dot_box_dir_group"
+
+
+
+                BoxLayout: # For left-aligned-button-group
+                    size_hint_y: None
+                    height: dp(40) # Button height
+
+                    FormButton:
+                        text: app.lang.get('get_correction_data_button_A')
+                        on_release: root.collect_calibration_data()
+                        bg_color: COLORS['BLUE']
+
+                BoxLayout:
+                    id: dot_box_dir_group
+                    orientation: 'vertical'
+                    spacing: dp(25)
+                    size_hint_y: None
+                    size_hint_x: None
+                    height: 0
+                    opacity: 0
+                    disabled: True
+                    width: 0
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        size_hint_y: None
+                        height: dp(40)
+                        FormLabel:
+                            text: app.lang.get('dot_box_dir_path_label_A')
+                            size_hint_x: None
+                            width: dp(315)
+                            pos_hint: {'center_y': 0.5}
+                            halign: 'left'
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            spacing: dp(25)
+                            FolderChooserButton:
+                                text: app.lang.get('browse_button')
+                                target_input: dot_box_path
+                                on_folder_selected: root.on_folder_selected(*args, preview=False)
+
+                            BoxLayout:
+                                orientation: 'horizontal'
+                                spacing: dp(5)
+                                FormDeleteButton:
+                                    id: image_delete_button
+                                    enable_hover: dot_box_path.text != app.lang.get('no_select_placeholder')
+                                    pos_hint: {"center_y": 0.45}
+                                    opacity: 1 if self.enable_hover else 0
+                                    disabled: not self.enable_hover
+                                    size_hint_x: None if self.enable_hover else 0
+                                    on_press: root.delete_dot_box_path(preview=False)
+
+
+                                FormLabel:
+                                    id: dot_box_path
+                                    text: root.dot_box_path_value if root.dot_box_path_value else app.lang.get('no_select_placeholder')
+                                    size_hint_x: 1
+                                    bold: False
+                                    font_size: dp(14.4)
+                                    shorten: True
+                                    shorten_from: 'center'
+
+
+                    FormLabel:
+                        text: app.lang.get('dot_box_dir_images_label_A')
+                        valign: 'top'
+                        size_hint_x: None
+                        width: dp(315)
+                        pos_hint: {'center_y': 1}
+                        halign: 'left'
+                        padding: [0, dp(20), 0, 0]
+
+
+                    AcquiredImageGalleryWidget:
+                        id: a_dot_box_dir_image_list
+                        height: dp(206)
+                        cols_number: 10
+                        thumbnail_width: dp(135)
+                        thumbnail_height: dp(83)
+                        maximum_image: 100
+
+
+                    BoxLayout:
+                        size_hint_y: None
+                        height: dp(35)
+                        orientation: 'horizontal'
+                        spacing: dp(15)
+                        FormButton:
+                            text: app.lang.get('add_accessory_button')
+                            on_release: root.move_image()
+                        ErrorMessage:
+                            id: a_dot_box_dir_image_list_error
+                            text: app.lang.get(self.error_message)
+                            padding: [0, 0, 0, dp(20)]
+
+
+                SubSectionHeader:
+                    text: app.lang.get('sub_subsection_A22_title')
+
+
+                AcquiredImageGalleryWidget:
+                    id: a_acquired_image_gallery
+                    cols_number: 8
+                    height: dp(256)
+                    thumbnail_width: dp(176)
+                    thumbnail_height: dp(108)
+
+
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(35)
+                    orientation: 'horizontal'
+                    spacing: dp(15)
+                    FormButton:
+                        text: app.lang.get('reload_button')
+                        on_release: root.folder_reload()
+                    ErrorMessage:
+                        id: a_acquired_image_gallery_error
+                        text: app.lang.get(self.error_message)
+                        padding: [0, 0, 0, dp(20)]
+                FormLabel:
+                    text: app.lang.get('margin_label_A')
+
+                    size_hint_x: None
+                    width: dp(300)
+                    pos_hint: {'center_y': 0.5}
+                    halign: 'left'
+
+
+
+                GridLayout:
+                    id: a_margin_group
+                    size_hint_y: None
+                    height: dp(80)
+                    cols: 2
+                    rows: 2
+                    spacing: dp(15)
+                    FormMarginGroup:
+                        id: margin_top
+                        label_key: 'margin_top_label_A'
+                    FormMarginGroup:
+                        id: margin_bottom
+                        label_key: 'margin_bottom_label_A'
+
+                    FormMarginGroup:
+                        id: margin_left
+                        label_key: 'margin_left_label_A'
+                    FormMarginGroup:
+                        id: margin_right
+                        label_key: 'margin_right_label_A'
+
+                ErrorMessage:
+                    id: a_margin_group_error
+                    min_value: 0
+                    max_value: 1280
+                    padding: [0, dp(10), 0, 0]
+                    text: app.lang.get(self.error_message).format(min_val=self.min_value, max_val=self.max_value)
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(40)
+                    FormButton:
+                        text: app.lang.get('get_perspective_correction_button_A')
+                        on_release: root.collect_angle_calibration_data()
+                        bg_color: COLORS['BLUE']
+
+                Separator:
+                    dashed: True
+
+
+
+
+                SectionHeader:
+                    text: app.lang.get('subsection_A3_title')
+
+                FormLabel:
+                    markup: True
+                    text: app.lang.get('perspective_select_label_A', required=True)
+                    size_hint_x: 1
+                    pos_hint: {'center_y': 0.5}
+                    halign: 'left'
+                    valign: 'middle'
+                    padding: [0, dp(10), 0, 0]
+
+                FormGroup:
+                    orientation: 'horizontal'
+                    spacing: dp(10)
+                    FormGroup:
+                        spacing: dp(15)
+                        orientation: 'vertical'
+                        FormSpinner:
+                            id: a_perspective_json_select
+                            hint_text: app.lang.get('select_placeholder')
+                            size_hint_x: 1
+                            allow_none: False
+                        ErrorMessage:
+                            text: app.lang.get(a_perspective_json_select.error_message)
+
+                    FormButton:
+                        text: app.lang.get('reload_button')
+                        pos_hint: {'top': 1}
+                        on_release: root.json_reload(spinner_id='a_perspective_json_select')
+                    FormButton:
+                        id: open_folder_perspective_button
+                        text: app.lang.get('open_folder_button')
+                        pos_hint: {'top': 1}
+                        on_release: root.open_folder(root.spinners['a_perspective_json_select'].folder_path)
+                        bg_color: COLORS['BLUE']
+
+
+            SubsectionContainer:
+                subsection_index: 2
+                current_subsection: root.current_subsection
+
+                SectionHeader:
+                    text: app.lang.get('subsection_A4_title')
+
+                FormGroup:
+                    FormLabel:
+                        text: app.lang.get('resize_dot_speed_pattern_label_A')
+                        size_hint_x: None
+                        width: dp(300)
+                        pos_hint: {'center_y': 0.5}
+                        halign: 'left'
+                    FormGroup:
+                        spacing: dp(15)
+                        pos_hint: {'center_y': 0.3}
+                        orientation: 'vertical'
+                        FormInput:
+                            id: a_resize_speed_pattern
+                            hint_text: app.lang.get('resize_dot_speed_pattern_hint_A')
+                            input_filter: 'int'
+                            validation_type: 'int'
+                            min_value: 0
+                            max_value: 375
+
+                        ErrorMessage:
+                            text: app.lang.get(a_resize_speed_pattern.error_message).format(min_val=a_resize_speed_pattern.min_value, max_val=a_resize_speed_pattern.max_value)
+
+
+                FormGroup:
+                    size_hint_y: None
+                    height: self.minimum_height
+                    padding: [0, dp(20), 0, dp(10)]
+
+                    FormLabel:
+                        text: app.lang.get('dot_score_label_A')
+                        size_hint_x: None
+                        width: dp(303)
+                        font_size: dp(15.2)
+                        bold: True
+                    FormLabel:
+                        size_hint_x: 1
+                        bold: False
+                        text: str(root.dot_score) if root.dot_score else ''
+
+
+                FormGroup:
+                    FormLabel:
+                        text: app.lang.get('save_to_dot_box_dir_label_A')
+                        size_hint_x: None
+                        width: dp(303)
+                        pos_hint: {'center_y': 0.5}
+                        halign: 'left'
+                    FormCheckBox:
+                        id: save_to_dot_box_preview
+                        text: app.lang.get('save_checkbox_label_A')
+                        spacing: dp(10)
+                        enable_conditional_layout: True
+                        target_id: "dot_box_dir_group_preview"
+
+
+                BoxLayout: # For left-aligned-button-group
+                    size_hint_y: None
+                    height: dp(40)
+                    FormButton:
+                        text: app.lang.get('get_motion_correction_button_A')
+                        on_release: root.collect_speed_calibration_data()
+                        bg_color: COLORS['BLUE']
+
+                BoxLayout:
+                    id: dot_box_dir_group_preview
+                    orientation: 'vertical'
+                    spacing: dp(25)
+                    size_hint_y: None
+                    size_hint_x: None
+                    height: 0
+                    opacity: 0
+                    disabled: True
+                    width: 0
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        size_hint_y: None
+                        height: dp(40)
+                        FormLabel:
+                            text: app.lang.get('dot_box_dir_path_label_A')
+                            size_hint_x: None
+                            width: dp(315)
+                            pos_hint: {'center_y': 0.5}
+                            halign: 'left'
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            spacing: dp(25)
+                            FolderChooserButton:
+                                text: app.lang.get('browse_button')
+                                target_input: dot_box_path_preview
+                                on_folder_selected: root.on_folder_selected(*args, preview=True)
+
+                            BoxLayout:
+                                orientation: 'horizontal'
+                                spacing: dp(5)
+                                FormDeleteButton:
+                                    enable_hover: dot_box_path_preview.text != app.lang.get('no_select_placeholder')
+                                    pos_hint: {"center_y": 0.45}
+                                    opacity: 1 if self.enable_hover else 0
+                                    disabled: not self.enable_hover
+                                    size_hint_x: None if self.enable_hover else 0
+                                    on_press: root.delete_dot_box_path(preview=True)
+
+
+                                FormLabel:
+                                    id: dot_box_path_preview
+                                    text: root.dot_box_path_preview_value if root.dot_box_path_preview_value else app.lang.get('no_select_placeholder')
+                                    size_hint_x: 1
+                                    bold: False
+                                    font_size: dp(14.4)
+                                    shorten: True
+                                    shorten_from: 'center'
+
+
+                    FormLabel:
+                        text: app.lang.get('dot_box_dir_images_label_A')
+                        valign: 'top'
+                        size_hint_x: None
+                        width: dp(315)
+                        pos_hint: {'center_y': 1}
+                        halign: 'left'
+                        padding: [0, dp(20), 0, 0]
+
+
+                    AcquiredImageGalleryWidget:
+                        id: a_dot_box_dir_image_list_preview
+                        height: dp(206)
+                        cols_number: 10
+                        thumbnail_width: dp(135)
+                        thumbnail_height: dp(83)
+                        maximum_image: 100
+
+
+
+
+                FormLabel:
+                    markup: True
+                    text: app.lang.get('speed_select_label_A', required=True)
+                    size_hint_x: 1
+                    pos_hint: {'center_y': 0.5}
+                    halign: 'left'
+                    valign: 'middle'
+                    padding: [0, dp(10), 0, 0]
+                FormGroup:
+                    orientation: 'horizontal'
+                    spacing: dp(10)
+                    FormGroup:
+                        spacing: dp(15)
+                        orientation: 'vertical'
+                        FormSpinner:
+                            id: a_speed_json_select
+                            hint_text: app.lang.get('select_placeholder')
+                            size_hint_x: 1
+                            allow_none: False
+                        ErrorMessage:
+                            text: app.lang.get(a_speed_json_select.error_message)
+
+                    FormButton:
+                        text: app.lang.get('reload_button')
+                        pos_hint: {'top': 1}
+                        on_release: root.json_reload(spinner_id='a_speed_json_select')
+
+                    FormButton:
+                        id: open_folder_speed_button
+                        text: app.lang.get('open_folder_button')
+                        pos_hint: {'top': 1}
+                        on_release: root.open_folder(root.spinners['a_speed_json_select'].folder_path)
+                        bg_color: COLORS['BLUE']
+
+
+            SubsectionContainer:
+                subsection_index: 3
+                current_subsection: root.current_subsection
+
+                SectionHeader:
+                    text: app.lang.get('subsection_A5_title')
+
+
+                BoxLayout:
+                    orientation: 'horizontal'
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: dp(30)
+
+                    FormLabelDiv:
+                        label_key: 'delta_t_speed_label_A'
+                        FormGroup:
+                            spacing: dp(15)
+                            orientation: 'vertical'
+                            FormInput:
+                                id: a_delta_t_speed
+                                input_filter: 'int'
+                                hint_text: app.lang.get('delta_t_hint_A')
+                                size_hint_x: 1
+                                text: '15000'
+                                validation_type: 'int'
+                                min_value: 1
+                                max_value: 100000
+                                allow_none: False
+
+                            ErrorMessage:
+                                text: app.lang.get(a_delta_t_speed.error_message).format(min_val=a_delta_t_speed.min_value, max_val=a_delta_t_speed.max_value)
+
+                    FormLabelDiv:
+                        label_key: 'bias_select_speed_label_A'
+                        FormGroup:
+                            spacing: dp(15)
+                            orientation: 'vertical'
+                            FormSpinner:
+                                id: a_bias_path_select_speed
+                                hint_text: app.lang.get('select_placeholder')
+                                size_hint_x: 1
+                            ErrorMessage:
+                                text: app.lang.get(a_bias_path_select_speed.error_message)
+
+                FormButton:
+                    text: app.lang.get('test_simple_activity_button_A')
+                    on_release: root.test_simple_activity()
+                    bg_color: COLORS['BLUE']
+
+            SubsectionContainer:
+                subsection_index: 4
+                current_subsection: root.current_subsection
+                spacing: dp(10)
+                FormLabelDiv:
+                    label_key: 'setting_name_label_A'
+                    required: True
+                    size_hint_x: 1
+                    FormGroup:
+                        spacing: dp(15)
+                        orientation: 'vertical'
+                        FormInput:
+                            id: a_setting_name_edit
+                            size_hint_x: 1
+                            hint_text: app.lang.get('setting_name_hint_A')
+                            validation_type: 'string'
+                            max_length: 100
+                            allow_none: False
+                        ErrorMessage:
+                            text: app.lang.get(a_setting_name_edit.error_message).format(max_len=a_setting_name_edit.max_length)
+
+                FormGroup:
+                    orientation: 'vertical'
+                    ReadOnlyInfoGroup:
+                        id: intrinsic_info
+                        text_key: 'intrinsic_select_label_A'
+
+                    ReadOnlyInfoGroup:
+                        id: pattern_cols_info
+                        text_key: 'pattern_cols_label_A'
+
+                    ReadOnlyInfoGroup:
+                        id: pattern_rows_info
+                        text_key: 'pattern_rows_label_A'
+
+                    ReadOnlyInfoGroup:
+                        id: bias_info
+                        text_key: 'bias_select_label_A'
+
+                    ReadOnlyInfoGroup:
+                        id: perspective_info
+                        text_key: 'perspective_select_label_A'
+
+                    ReadOnlyInfoGroup:
+                        id: speed_info
+                        text_key: 'speed_select_label_A'
+
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(15)
+                padding: [0, dp(15), 0, 0]
+
+                Separator:
+
+                BoxLayout:
+                    id: button_navigation_container
+                    size_hint_y: None
+                    height: dp(48) if root.current_subsection != 4 else dp(80)
+                    spacing: dp(20)

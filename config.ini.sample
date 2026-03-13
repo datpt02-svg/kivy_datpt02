@@ -1,0 +1,20 @@
+[obj_ir]
+port = COM5
+baudrate = 9600
+
+[ai_ir]
+port = COM6
+baudrate = 9600
+
+[lamp_ir]
+port = COM7
+baudrate = 9600
+
+[lamp]
+port = COM8
+
+[settings]
+_hide_alignment_window_b1 = 0
+use_tensorrt = 0
+min_ir_obj_duration_ms = 100
+max_ir_obj_duration_ms = 1000

@@ -1,0 +1,32 @@
+services:
+  windows:
+    build: .
+    environment:
+      VERSION: "11"
+      RAM_SIZE: "8G"
+      CPU_CORES: "4"
+      DISK_SIZE: "64G"
+      USERNAME: "user"
+      PASSWORD: "pass"
+    privileged: true
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - "8006:8006"   # Web VNC - truy cập tại http://localhost:8006
+      - "3389:3389"   # RDP
+    volumes:
+      - /dev/kvm:/dev/kvm
+      - windows_data:/storage
+      - ./:/shared    # Project files accessible inside VM as C:\shared\
+    stop_grace_period: 2m
+    restart: on-failure
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+volumes:
+  windows_data:

@@ -1,0 +1,201 @@
+#:import DefaultValuesD1 app.libs.constants.default_values.DefaultValuesD1
+
+<AIDetectionExecutionScreen>:
+    name: 'screen_D1_ai_detection_execution'
+    ScrollView:
+        id: main_scroll_view
+        bar_width: dp(10)
+        scroll_type: ['bars']
+        effect_cls: "ScrollEffect" # Basic scroll effect
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: self.minimum_height
+            padding: dp(30)
+            spacing: dp(25)
+
+            PageHeader: # Page Title (H2)
+                text: app.lang.get('ai_detection_title_D1', 'Screen D1 Title Missing')
+
+            CompFormSpinner:
+                id: select_models
+                orientation: 'vertical'
+                spacing: dp(18)
+                label_text: 'select_trained_model_label_D1'
+                label_required: DefaultValuesD1.SELECT_MODEL_REQUIRED
+                hint_text: 'select_placeholder'
+                validation_type: 'string'
+                allow_none: not DefaultValuesD1.SELECT_MODEL_REQUIRED
+                callback_on_text: root.on_selected_model
+                value_to_name: {} #set in python
+
+            SubSectionHeader:
+                text: app.lang.get('detect_params_D1')
+            FormGroup:
+                spacing: dp(30)
+                FormGroup:
+                    spacing: dp(30)
+                    orientation: 'vertical'
+                    CompFormInput:
+                        id: heat_kernel_size
+                        orientation: 'vertical'
+                        spacing: dp(18)
+                        label_text: 'blur_result_label_D1'
+                        label_required: DefaultValuesD1.HEAT_KERNEL_SIZE_REQUIRED
+                        label_width: None
+                        validation_type: 'int_odd'
+                        step: 2
+                        min_value: DefaultValuesD1.HEAT_KERNEL_SIZE_MIN_VALUE
+                        max_value: DefaultValuesD1.HEAT_KERNEL_SIZE_MAX_VALUE
+                        allow_none: not DefaultValuesD1.HEAT_KERNEL_SIZE_REQUIRED
+                    CompFormSlider:
+                        id: heat_threshold
+                        orientation: 'vertical'
+                        spacing: dp(18)
+                        label_text: 'threshold_label_D1'
+                        label_required: DefaultValuesD1.HEAT_THRESHOLD_REQUIRED
+                        label_width: None
+                        validation_type: 'int'
+                        step: 1
+                        min_value: DefaultValuesD1.HEAT_THRESHOLD_MIN_VALUE
+                        max_value: DefaultValuesD1.HEAT_THRESHOLD_MAX_VALUE
+                        allow_none: not DefaultValuesD1.HEAT_THRESHOLD_REQUIRED
+                        show_color_palette: True
+
+                FormGroup:
+                    spacing: dp(30)
+                    orientation: 'vertical'
+                    CompFormInput:
+                        id: heat_min_area
+                        orientation: 'vertical'
+                        spacing: dp(18)
+                        label_text: 'min_area_label_D1'
+                        label_required: DefaultValuesD1.HEAT_MIN_AREA_REQUIRED
+                        label_width: None
+                        validation_type: 'int'
+                        step: 1
+                        min_value: DefaultValuesD1.HEAT_MIN_AREA_MIN_VALUE
+                        max_value: DefaultValuesD1.HEAT_MIN_AREA_MAX_VALUE
+                        allow_none: not DefaultValuesD1.HEAT_MIN_AREA_REQUIRED
+                    CompFormInput:
+                        id: heat_min_intensity
+                        orientation: 'vertical'
+                        spacing: dp(18)
+                        label_text: 'event_intensity_label_D1'
+                        label_required: DefaultValuesD1.HEAT_MIN_INTENSITY_REQUIRED
+                        label_width: None
+                        validation_type: 'int'
+                        min_value: DefaultValuesD1.HEAT_MIN_INTENSITY_MIN_VALUE
+                        max_value: DefaultValuesD1.HEAT_MIN_INTENSITY_MAX_VALUE
+                        allow_none: not DefaultValuesD1.HEAT_MIN_INTENSITY_REQUIRED
+
+            FormButton:
+                text: app.lang.get('reload_preset_button_D1')
+                on_press: root.on_reload_preset()
+                pos_hint: {'center_y': 0.5, 'right': 1}
+
+            SubSectionHeader:
+                text: app.lang.get('related_info_label_D1')
+
+            FormGroup:
+                orientation: 'vertical'
+                FormGroup:
+                    height: dp(40)
+                    Label:
+                        text: app.lang.get('learn_method_label_D1')
+                        color: "#333000"
+                        size_hint_x: None
+                        size: self.texture_size
+                        font_size: dp(15.2)
+                        bold: True
+                    FormLabel:
+                        id: learn_method
+                        db_data: "" #from python
+                        size_hint_x: 1
+                        bold: False
+                        text:
+                            app.lang.get('learn_method_1') if self.db_data == '0' \
+                            else app.lang.get('learn_method_2') if self.db_data == '1' \
+                            else "-"
+                FormGroup:
+                    height: dp(40)
+                    Label:
+                        text: app.lang.get('patch_size_label_D1')
+                        color: "#333000"
+                        size_hint_x: None
+                        size: self.texture_size
+                        font_size: dp(15.2)
+                        bold: True
+                    FormLabel:
+                        id: patch_size
+                        size_hint_x: 1
+                        bold: False
+                        text: "-"
+                FormGroup:
+                    height: dp(40)
+                    Label:
+                        text: app.lang.get('input_size_1_label_D1')
+                        color: "#333000"
+                        size_hint_x: None
+                        size: self.texture_size
+                        font_size: dp(15.2)
+                        bold: True
+                    FormLabel:
+                        id: input_size
+                        size_hint_x: 1
+                        bold: False
+                        text: "-"
+                FormGroup:
+                    height: dp(40)
+                    Label:
+                        text: app.lang.get('sensor_settings_name_info_D1')
+                        color: "#333000"
+                        size_hint_x: None
+                        size: self.texture_size
+                        font_size: dp(15.2)
+                        bold: True
+                    FormLabel:
+                        id: sensor_setting_name
+                        size_hint_x: 1
+                        bold: False
+                        text: "-"
+                FormGroup:
+                    height: dp(40)
+                    Label:
+                        text: app.lang.get('work_name_info_D1')
+                        color: "#333000"
+                        size_hint_x: None
+                        size: self.texture_size
+                        font_size: dp(15.2)
+                        bold: True
+                    FormLabel:
+                        id: work_config_name
+                        size_hint_x: 1
+                        bold: False
+                        text: "-"
+            FormButton:
+                text: app.lang.get('start_detection_button_D1')
+                on_release: root.on_start_detection()
+                bg_color: COLORS['BLUE']
+
+            Separator:
+
+            FormGroup:
+                orientation: 'horizontal'
+                Label:
+                    size_hint_y: None
+                    pos_hint: {'top': 1}
+                    font_size: dp(17.6)
+                    color: COLORS['BLUE_BLACK']
+                    text_size: self.width, None
+                    height: self.texture_size[1] + dp(10)
+                    bold: True
+                    text: app.lang.get('detection_status_label_D1')
+                FormOpenFolderButton:
+                    id: open_folder_button
+                    text: app.lang.get('open_folder_button')
+                    #path defined in python
+
+            LogViewerBox:
+                id: display_log
+                default_message: app.lang.get('detection_status_placeholder_D1')

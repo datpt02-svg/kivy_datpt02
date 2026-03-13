@@ -1,0 +1,37 @@
+# --- Screen Class Rule Definitions (Placeholders for simplicity) ---
+<WelcomeScreen>:
+    name: 'screen_welcome'
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(50)
+        spacing: dp(20)
+        canvas.before:
+            Color:
+                rgba: COLORS['WHITE']
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        Label:
+            text: root.welcome_title_text
+            font_size: '32sp'
+            bold: True
+            color: COLORS['BLUE_BLACK']
+            halign: 'center'
+            size_hint_y: None
+            height: self.texture_size[1] + dp(20)
+        Label:
+            text: root.welcome_instruction_text
+            font_size: '20sp'
+            color: COLORS['MEDIUM_BLACK']
+            halign: 'center'
+            size_hint_y: None
+            height: self.texture_size[1] + dp(10)
+        Label:
+            text: root.welcome_description_text
+            font_size: '16sp'
+            color: COLORS['MEDIUM_GRAY']
+            halign: 'center'
+            text_size: self.width - dp(40), None
+            size_hint_y: None
+            height: self.texture_size[1] + dp(10)
+        Widget: # Spacer

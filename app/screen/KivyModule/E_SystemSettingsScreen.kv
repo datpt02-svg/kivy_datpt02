@@ -1,0 +1,241 @@
+#:import DefaultValuesE app.libs.constants.default_values.DefaultValuesE
+
+<SystemSettingsScreen>:
+    name: 'screen_E1_system_settings'
+    ScrollView:
+        id: main_scroll_view
+        bar_width: dp(10)
+        scroll_type: ['bars']
+        effect_cls: "ScrollEffect" # Basic scroll effect
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: self.minimum_height
+            padding: dp(30)
+            spacing: dp(30)
+
+            PageHeader: # Page Title (H2)
+                text: app.lang.get('system_settings_title_E1', 'Screen E Title Missing')
+
+            FormGroup:
+                height: self.minimum_height
+                FormLabel:
+                    size_hint: None, 1
+                    text: app.lang.get('debug_mode_label_E1')
+                    width: dp(300)
+                FormRadioButton:
+                    id: debug
+                    size_hint: None, None
+                    pos_hint: {'center_y': 0.5}
+                    orientation: 'horizontal'
+                    label: [app.lang.get('debug_mode_off_E1'), app.lang.get('debug_mode_on_E1')]
+                    group: 'debug_state'
+
+            FormGroup:
+                CompFormInput:
+                    id: dot_point
+                    label_text: 'dot_point_label_E1'
+                    label_required: DefaultValuesE.DOT_POINT_REQUIRED
+                    validation_type: 'float'
+                    step: 0.01
+                    min_value: DefaultValuesE.DOT_POINT_MIN_VALUE
+                    max_value: DefaultValuesE.DOT_POINT_MAX_VALUE
+                    allow_none: not DefaultValuesE.DOT_POINT_REQUIRED
+
+            FormGroup:
+                CompFormSpinner:
+                    id: detect_area_split
+                    label_text: 'detect_area_split_label_E1'
+                    values: [app.lang.get('no_detect_area_split'), '4x3', '8x6', '16x12']
+                    text: app.lang.get('no_detect_area_split')
+
+            FormGroup:
+                FormLabel:
+                    size_hint: None, 1
+                    text: app.lang.get('backup_path_label_E1')
+                    width: dp(300)
+                FormGroup:
+                    spacing: dp(-5)
+                    pos_hint: {'center_y': 0.5}
+                    orientation: 'vertical'
+                    FormGroup:
+                        FolderChooserButton:
+                            size_hint: None, None
+                            text: app.lang.get('browse_button')
+                            target_input: backup_path.path_text
+                            pos_hint: {"center_y": 0.8}
+                        BoxLayout:
+                            id: backup_path_group
+                            orientation: 'horizontal'
+                            spacing: dp(5)
+                            FormDeleteButton:
+                                target_path: backup_path.path_text.text
+                                enable_hover: False if self.target_path == "" else True
+                                pos_hint: {"center_y": 0.48}
+                                opacity: 0 if self.target_path == "" else 1
+                                disabled: True if self.target_path == "" else False
+                                size_hint_x: None if self.target_path != "" else 0
+                                on_press:
+                                    backup_path.path_text.text = ""
+                            PathWrapperLabel: #wrapped self.path_text.text
+                                id: backup_path
+                                size_hint_x: None
+                                placeholder: app.lang.get('no_folder_message')
+                                bold: False
+                                font_size: dp(14.4)
+                                width: dp(500) if self.text == "" else dp(450)
+                                shorten: True
+                                shorten_from: 'center'
+                                text: self.placeholder if self.path_text.text == "" else self.path_text.text #Note: change path_text.text instead of text
+                                error_message: ""
+                    ErrorMessage:
+                        text: app.lang.get(backup_path.error_message)
+
+            FormGroup:
+                FormGroup:
+                    orientation: 'vertical'
+                    size_hint: None, 1
+                    width: self.minimum_width
+                    FormLabel:
+                        label_required: DefaultValuesE.SHOW_IMAGE_WINDOW_WIDTH_REQUIRED or DefaultValuesE.SHOW_IMAGE_WINDOW_HEIGHT_REQUIRED
+                        markup: self.label_required
+                        size_hint: None, None
+                        text: app.lang.get('sensor_window_size_label_E1', required=self.label_required)
+                        height: dp(40)
+                        width: dp(300)
+                    Widget:
+                FormGroup:
+                    orientation: 'vertical'
+                    spacing: dp(24)
+                    padding: [0, dp(18), 0, 0]
+                    CompFormInput:
+                        orientation: 'vertical'
+                        spacing: dp(24)
+                        id: show_image_window_width
+                        label_text: 'width_label_E1'
+                        label_bold: False
+                        validation_type: 'int'
+                        allow_negative: False
+                        allow_none: not DefaultValuesE.SHOW_IMAGE_WINDOW_WIDTH_REQUIRED
+                        max_value: DefaultValuesE.SHOW_IMAGE_WINDOW_WIDTH_MAX_VALUE
+                        min_value: DefaultValuesE.SHOW_IMAGE_WINDOW_WIDTH_MIN_VALUE
+                    CompFormInput:
+                        orientation: 'vertical'
+                        spacing: dp(24)
+                        id: show_image_window_height
+                        label_text: 'height_label_E1'
+                        label_bold: False
+                        validation_type: 'int'
+                        allow_negative: False
+                        allow_none: not DefaultValuesE.SHOW_IMAGE_WINDOW_HEIGHT_REQUIRED
+                        max_value: DefaultValuesE.SHOW_IMAGE_WINDOW_HEIGHT_MAX_VALUE
+                        min_value: DefaultValuesE.SHOW_IMAGE_WINDOW_HEIGHT_MIN_VALUE
+            FormGroup:
+                FormGroup:
+                    orientation: 'vertical'
+                    size_hint: None, 1
+                    width: self.minimum_width
+                    FormLabel:
+                        label_required: DefaultValuesE.SHOW_HIS_IMAGE_WINDOW_WIDTH_REQUIRED or DefaultValuesE.SHOW_HIS_IMAGE_WINDOW_HEIGHT_REQUIRED
+                        markup: self.label_required
+                        size_hint: None, None
+                        text: app.lang.get('display_window_size_label_E1', required=self.label_required)
+                        height: dp(40)
+                        width: dp(300)
+                    Widget:
+                FormGroup:
+                    orientation: 'vertical'
+                    spacing: dp(24)
+                    padding: [0, dp(18), 0, 0]
+                    CompFormInput:
+                        orientation: 'vertical'
+                        spacing: dp(24)
+                        id: show_his_image_window_width
+                        label_text: 'width_label_E1'
+                        label_bold: False
+                        validation_type: 'int'
+                        allow_negative: False
+                        allow_none: not DefaultValuesE.SHOW_HIS_IMAGE_WINDOW_WIDTH_REQUIRED
+                        max_value: DefaultValuesE.SHOW_HIS_IMAGE_WINDOW_WIDTH_MAX_VALUE
+                        min_value: DefaultValuesE.SHOW_HIS_IMAGE_WINDOW_WIDTH_MIN_VALUE
+                    CompFormInput:
+                        orientation: 'vertical'
+                        spacing: dp(24)
+                        id: show_his_image_window_height
+                        label_text: 'height_label_E1'
+                        label_bold: False
+                        validation_type: 'int'
+                        allow_negative: False
+                        allow_none: not DefaultValuesE.SHOW_HIS_IMAGE_WINDOW_HEIGHT_REQUIRED
+                        max_value: DefaultValuesE.SHOW_HIS_IMAGE_WINDOW_HEIGHT_MAX_VALUE
+                        min_value: DefaultValuesE.SHOW_HIS_IMAGE_WINDOW_HEIGHT_MIN_VALUE
+            FormGroup:
+                CompFormInput:
+                    id: patch_size_list
+                    label_text: 'patch_size_list_label_E1'
+                    label_required: DefaultValuesE.PATCH_SIZE_LIST_REQUIRED
+                    allow_none: not DefaultValuesE.PATCH_SIZE_LIST_REQUIRED
+                    force_half_width: True
+                    regex_filter: r'^[0-9０-９,、，]*$'
+                    text: "448,896,1792"
+            FormGroup:
+                CompFormInput:
+                    id: input_size_list
+                    label_text: 'input_size_list_label_E1'
+                    label_required: DefaultValuesE.INPUT_SIZE_LIST_REQUIRED
+                    allow_none: not DefaultValuesE.INPUT_SIZE_LIST_REQUIRED
+                    force_half_width: True
+                    regex_filter: r'^[0-9０-９,、，]*$'
+                    text: "224,448,672"
+
+            FormGroup:
+                orientation: 'vertical'
+                FormGroup:
+                    FormLabel:
+                        text: app.lang.get('auto_cleaner_label_E1')
+                        size_hint_x: None
+                        width: dp(300)
+                    FormCheckBox:
+                        id: auto_cleaner_checkbox
+                        active: True #DefaultValuesE.AUTO_CLEANER_CHECKBOX_DEFAULT -> set in python to trigger on_active
+                        on_active: root.on_auto_cleaner_checkbox()
+                        enable_conditional_layout: True
+                        target_id: 'auto_cleaner_days_to_keep_layout'
+                BoxLayout:
+                    id: auto_cleaner_days_to_keep_layout
+                    orientation: 'vertical'
+                    spacing: dp(30)
+                    size_hint: 1, None
+                    height: self.minimum_height
+                    opacity: 1 #on by default
+                    disabled: False
+                    FormGroup:
+                        FormLabel:
+                            markup: True
+                            text: app.lang.get('auto_cleaner_days_to_keep_label_left_E1', required=DefaultValuesE.AUTO_CLEANER_DAYS_TO_KEEP_REQUIRED)
+                            size_hint_x: None
+                            width: dp(300)
+                        FormGroup:
+                            spacing: dp(18)
+                            pos_hint: {'center_y': 0.3}
+                            orientation: 'vertical'
+                            FormGroup:
+                                FormInput:
+                                    id: auto_cleaner_days_to_keep
+                                    validation_type: 'int'
+                                    text: str(DefaultValuesE.AUTO_CLEANER_DAYS_TO_KEEP)
+                                    min_value: DefaultValuesE.AUTO_CLEANER_DAYS_TO_KEEP_MIN_VALUE
+                                    max_value: DefaultValuesE.AUTO_CLEANER_DAYS_TO_KEEP_MAX_VALUE
+                                    allow_none: not DefaultValuesE.AUTO_CLEANER_DAYS_TO_KEEP_REQUIRED
+                                FormLabel:
+                                    text: app.lang.get('auto_cleaner_days_to_keep_label_right_E1')
+                            ErrorMessage:
+                                text: app.lang.get(auto_cleaner_days_to_keep.error_message).format(min_val=auto_cleaner_days_to_keep.min_value, max_val=auto_cleaner_days_to_keep.max_value)
+
+            FormButton:
+                text: app.lang.get('save_settings_button_E1')
+                on_release: root.save_system_settings()
+                size_hint_x: None
+                bold: True
+                pos_hint: {'center_y': 0.5, 'right': 1}
+                bg_color: COLORS['GREEN']

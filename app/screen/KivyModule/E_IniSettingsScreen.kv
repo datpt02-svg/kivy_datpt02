@@ -1,0 +1,60 @@
+#:import DefaultValuesE app.libs.constants.default_values.DefaultValuesE
+
+<IniSettingsScreen>:
+    name: 'screen_E2_ini_settings'
+    ScrollView:
+        id: main_scroll_view
+        bar_width: dp(10)
+        scroll_type: ['bars']
+        effect_cls: "ScrollEffect" # Basic scroll effect
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: self.minimum_height
+            padding: dp(30)
+            spacing: dp(30)
+
+            PageHeader: # Page Title (H2)
+                text: app.lang.get('ini_settings_title_E2')
+
+            FormGroup:
+                id: ini_section_layout
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                padding: dp(30)
+                spacing: dp(30)
+                # python add:<IniSectionBlock>
+
+            BoxLayout:
+                id: save_button_layout
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                padding: [dp(30), 0, dp(30), 0]
+                spacing: dp(0)
+                # python add: <SaveButton>
+
+<IniSectionBlock>:
+    FormGroup:
+        orientation: 'vertical'
+        size_hint: None, 1
+        width: self.minimum_width
+        FormLabel:
+            size_hint: None, None
+            text: "[" + str(root.section_name) + "]"
+            height: dp(40)
+            width: dp(150)
+        Widget:
+    FormGroup:
+        id: key_value_group
+        orientation: 'vertical'
+        spacing: dp(24)
+        padding: [0, dp(18), 0, 0]
+
+<SaveButton>
+    text: app.lang.get('save_ini_settings_button_E2')
+    size_hint_x: None
+    bold: True
+    pos_hint: {'center_y': 0.5, 'right': 1}
+    bg_color: COLORS['GREEN']

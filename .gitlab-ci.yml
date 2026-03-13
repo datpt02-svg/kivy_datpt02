@@ -1,0 +1,28 @@
+stages:
+  - setup
+  - run
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.pip-cache"
+
+default:
+  image: python:3.9-slim
+
+install-deps:
+  stage: setup
+  cache:
+    key: pip-$CI_COMMIT_REF_SLUG
+    paths:
+      - .pip-cache/
+  script:
+    - python -m pip install --upgrade pip
+    - pip install -r requirements.txt
+  artifacts:
+    expire_in: 1 day
+
+run-app:
+  stage: run
+  script:
+    - python main.py
+  dependencies:
+    - install-deps

@@ -1,0 +1,1148 @@
+#:import COLORS app.libs.constants.colors.COLORS
+
+#--------------------Form Components--------------------
+
+
+
+<FormGroup>:
+    orientation: 'horizontal'
+    size_hint_y: None
+    height: self.minimum_height
+    spacing: dp(15)
+
+<FormLabel>:
+    size_hint_x: 0.5
+    text_size: self.width, None
+    halign: 'left'
+    valign: 'top'
+    font_size: dp(15.2)
+    color: COLORS['MEDIUM_GRAY']
+    bold: True
+    padding: [0, dp(10), 0, dp(10)]
+    text_key: ''
+    format_args: None
+    text: app.lang.get(root.text_key).format(**root.format_args) if root.text_key and root.format_args else (app.lang.get(root.text_key) if root.text_key else root.text)
+
+<FormInput>:
+    size_hint: None, None
+    width: dp(120)
+    height: self.minimum_height
+    font_size: dp(14.4)
+    text_size: self.width, self.height
+    pos_hint: {'center_y': 0.5}
+    padding: [dp(15), dp(10), dp(15), dp(10)]
+    halign: 'left'
+    background_normal: ''
+    background_active: ''
+    background_color: COLORS['TRANSPARENT'] #use bg_color instead
+    bg_color: COLORS['WHITE']
+    multiline: False
+    show_triangle_buttons: False
+    show_border_line: True
+    allow_negative: False
+    write_tab: False
+    show_suggestion: False
+
+<ErrorMessage>:
+    text: ''
+    color: COLORS['DARK_RED']
+    font_size: dp(14.4)
+    width: self.texture_size[0] + dp(10)  # Dynamic width based on text
+    height: self.texture_size[1]
+    opacity: 0 if self.text == '' else 1
+    text_size: self.size
+
+<FormMarginInput>:
+    orientation: 'horizontal'
+    size_hint_x: None
+    width: dp(150)
+    label_text: ''
+    hint_text: ''
+    error_message: margin_input.error_message
+    Label:
+        size_hint_x: None
+        width: self.texture_size[0] + dp(25)
+        text: root.label_text
+        font_size: dp(14.4)
+        color: COLORS['MEDIUM_GRAY']
+        halign: 'left'
+        valign: 'center'
+    FormInput:
+        id: margin_input
+        hint_text: root.hint_text
+        input_filter: 'int'
+        validation_type: root.validation_type
+        min_value: root.min_value
+        max_value: root.max_value
+
+<FormSpinner>:
+    size_hint_y: None
+    height: dp(40)
+    font_size: dp(14.4)
+    text_size: self.width - dp(30), None
+    halign: 'left'
+    background_normal: ''
+    background_color: COLORS['TRANSPARENT'] #use bg_color instead
+    bg_color: COLORS['WHITE']
+    shorten: True
+    shorten_from: 'right'
+
+<FormButton>:
+    size_hint: None, None
+    halign: 'center'
+    valign: 'center'
+    background_normal: ''
+    background_color: COLORS['TRANSPARENT'] #use bg_color instead
+    padding: [0, dp(-3), 0, 0]
+
+    text_key: ''
+    text: app.lang.get(root.text_key) if root.text_key else root.text
+    color: self.text_color
+
+<FormCheckBox>:
+    orientation: 'horizontal'
+    size_hint_y: None
+    size_hint_x: None
+    height: dp(40)
+    spacing: dp(5)
+    font_size_checkbox: dp(15.2)
+    enable_conditional_layout: False
+    width: self.minimum_width
+    on_touch_down: if self.collide_point(*args[1].pos) and not checkbox.collide_point(*args[1].pos) and not checkbox_label.collide_point(*args[1].pos): checkbox.active = True if root.group else not checkbox.active
+    CheckBox:
+        id: checkbox
+        group: root.group if root.group else None
+        size_hint_x: None
+        width: dp(14)
+        active: root.active
+        allow_no_selection: False if root.group else True
+        on_active: root.on_checkbox_active(self.active)
+        canvas:
+            Clear
+            Color:
+                rgba: self.color
+            Rectangle:
+                source: self._radio_image if self.group else self._checkbox_image
+                size: dp(24), dp(24) #resize checkbox
+                pos: int(self.center_x - dp(12)), self.center_y -dp(13)
+        canvas.before:
+            PushMatrix
+            Scale:
+                origin: self.center
+                xyz: (0.75, 0.75, 1) if root.group else (0.9, 0.9, 1)
+        canvas.after:
+            PopMatrix
+
+    Label:
+        id: checkbox_label
+        text: root.text
+        size_hint_x: None
+        width: self.texture_size[0]
+        font_size: root.font_size_checkbox if root.font_size_checkbox else dp(15.2)
+        color: COLORS['MEDIUM_GRAY']
+        valign: 'center'
+        halign: 'left'
+        on_touch_down: if self.collide_point(*args[1].pos): checkbox.active = True if root.group else not checkbox.active
+
+<FormMultiCheckbox>:
+    spacing: dp(10)
+    size_hint_y: None
+    height: self.minimum_height
+
+<FormRadioButton>:
+    spacing: dp(20)
+    size_hint_y: None
+    height: self.minimum_height
+
+<ColorPalette>:
+    canvas:
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            pos: self.x + self.padding + self.offset_pos, self.y
+            size: self.width - 2 * self.padding + self.offset_size, self.height
+            texture: self.texture
+
+<FormSlider>:
+    orientation: 'horizontal'
+    size_hint: 1, None
+    height: self.minimum_height
+    spacing: dp(10)
+    error_message: input_box.error_message
+    FormInput:
+        id: input_box
+        min_value: root.min_value
+        max_value: root.max_value
+        validation_type: root.validation_type
+        allow_none: root.allow_none
+        strict: root.strict
+        step: root.step
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: dp(4)
+        Slider:
+            id: slider
+            min: root.min_value
+            max: root.max_value
+            step: root.step
+            value_track: True
+            value_track_color: COLORS['SKY_BLUE']
+            value_track_width: dp(4)
+            cursor_size: dp(16), dp(16)
+            background_color: COLORS['TRANSPARENT']
+            background_width: dp(3)
+            size_hint_y: None
+            height: dp(30)
+            padding: dp(16)
+            canvas.before:
+                Color:
+                    rgba: COLORS['DOVE_WHITE']
+                RoundedRectangle:
+                    pos: self.x + self.padding, self.center_y - self.background_width / 2
+                    size: self.width - self.padding * 2, self.background_width * 2
+                    radius: [dp(3)]
+        ColorPalette:
+            id: palette
+            size_hint: 1, None
+            height: dp(16) if root.show_color_palette else 0
+            opacity: 1 if root.show_color_palette else 0
+            disabled: not root.show_color_palette
+            padding: slider.padding
+            offset_pos: -3
+            offset_size: 3
+            colormap_name: root.colormap_name if hasattr(root, 'colormap_name') else 'JET'
+
+<FormImageUploadButton>:
+    orientation: 'horizontal'
+    size_hint_y: None
+    height: dp(40)
+    spacing: dp(5)
+    width: self.minimum_width
+    height: self.minimum_height
+    FormButton:
+        text: app.lang.get('select_image_button')
+        on_release: root.open_filechooser()
+
+<FormOpenFolderButton>:
+    size_hint: None, None
+    width: self.minimum_width
+    height: self.minimum_height
+    text: ''
+    FormButton:
+        text: root.text if root.text != '' else "Preview"
+        on_release: root.open_directory_in_explorer()
+        bg_color: COLORS['BLUE']
+
+<FormFolderCreateButton>:
+    size_hint_x: None
+    width: self.minimum_width
+    text: ''
+    create: False
+    min_width: dp(100)
+    FormButton:
+        id: form_folder_create_button
+        text: root.text if root.text != '' else app.lang.get("add_button_label")
+        min_width: root.min_width if root.min_width else dp(100)
+        on_release:
+            root.dispatch('on_press') #dispatch first to get create_folder needed info
+            root.create_folder()
+
+<FolderChooserButton>:
+    size_hint_x: None
+    width: self.minimum_width
+    text: ''
+    FormButton:
+        text: root.text
+        on_release: root.choose_folder()
+
+<FormDateInput>:
+    multiline: False
+    hint_text: 'yyyy/mm/dd'
+
+<FormDeleteButton>:
+    size_hint: None, None
+    size: dp(15), dp(15)
+    background_color: COLORS['WHITE_TRANSPARENT']
+    border: 0, 0, 0, 0
+    padding: 0
+
+<Day>:
+    background_disabled_normal: ''
+    disabled_color: COLORS['GRAY_TRANSPARENT']
+    size_hint: 1, 1
+    text_color: COLORS['MEDIUM_GRAY']
+
+<FormDatePicker>:
+    orientation: "vertical"
+    size_hint: None, None
+    width: dp(280)
+    height: dp(320)
+    padding: dp(15)
+    spacing: dp(5)
+    canvas.before:
+        # background fill
+        Color:
+            rgba: COLORS['WHITE']
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(6), dp(6), dp(6), dp(6)]
+        # border line
+        Color:
+            rgba: COLORS['LIGHT_GRAY']
+        Line:
+            rounded_rectangle: (self.x + 0.5, self.y + 0.5, self.width - 1, self.height - 1, dp(6))
+            width: dp(1)
+    # --- Navigation bar ---
+    BoxLayout:
+        spacing: dp(5)
+        FormSpinner:
+            id: nav_year
+            size_hint: 1, 1
+            values: [str(i) for i in range(2000,2100)]
+            text: str(root.year)
+            on_text:
+                root.year = int(self.text)
+        FormSpinner:
+            id: nav_month
+            size_hint: 1, 1
+            values: root.months
+            text: root.months[root.month-1]
+            on_text:
+                root.month = root.months.index(self.text)+1
+        Widget:
+            size_hint: 0.2, 1
+        FormButton:
+            text: "<"
+            size_hint: 0.5, 1
+            on_release:
+                if root.month == 1: root.year -= 1
+                root.month = 12 if root.month == 1 else root.month - 1
+        FormButton:
+            text: ">"
+            size_hint: 0.5, 1
+            on_release:
+                if root.month == 12: root.year += 1
+                root.month = 1 if root.month == 12 else root.month + 1
+    # --- Weekdays header ---
+    BoxLayout:
+        spacing: dp(5)
+        padding: [0, dp(10), 0, dp(5)]
+        FormLabel:
+            text: app.lang.get('calendar_day_label_1')
+            size_hint_x: 1
+            halign: 'center'
+            bold: False
+        FormLabel:
+            text: app.lang.get('calendar_day_label_2')
+            size_hint_x: 1
+            halign: 'center'
+            bold: False
+        FormLabel:
+            text: app.lang.get('calendar_day_label_3')
+            size_hint_x: 1
+            halign: 'center'
+            bold: False
+        FormLabel:
+            text: app.lang.get('calendar_day_label_4')
+            size_hint_x: 1
+            halign: 'center'
+            bold: False
+        FormLabel:
+            text: app.lang.get('calendar_day_label_5')
+            size_hint_x: 1
+            halign: 'center'
+            bold: False
+        FormLabel:
+            text: app.lang.get('calendar_day_label_6')
+            size_hint_x: 1
+            halign: 'center'
+            bold: False
+        FormLabel:
+            text: app.lang.get('calendar_day_label_7')
+            size_hint_x: 1
+            halign: 'center'
+            bold: False
+    # --- Weeks container ---
+    BoxLayout:
+        id: weeks_container
+        orientation: "vertical"
+        spacing: dp(5)
+        padding: [0, dp(5), 0, dp(5)]
+        size_hint_y: 10
+    # --- Footer ---
+    BoxLayout:
+        orientation: 'horizontal'
+        spacing: dp(5)
+        Widget:
+        FormButton:
+            id: today_button
+            size_hint: 0.4, 1
+            text: app.lang.get('calendar_today')
+            on_release:
+                root.dispatch('on_today_button')
+
+
+
+#--------------------Composite Components--------------------
+
+
+
+<CompFormInput>
+    FormLabel:
+        markup: root.label_markup
+        text:
+            ('[b]' if (root.label_bold and root.label_markup) else '') + \
+            (app.lang.get(root.label_text, required=root.label_required) if root.use_label_text_key else root.label_text) + \
+            ('[/b]' if (root.label_bold and root.label_markup) else '') + \
+            ('\n[size=%d]%s[/size]' % (root.suggest_text_font_size, app.lang.get(root.suggest_text)) if (root.suggest_text and root.label_markup) else '')
+        size_hint_x: 1 if not root.label_width else None
+        width: 0 if not root.label_width else root.label_width
+        bold: root.label_bold if not root.label_markup else False #fallback but better use markup [b][/b]
+    FormGroup:
+        spacing: dp(18)
+        pos_hint: {'center_y': 0.3}
+        orientation: 'vertical'
+        FormInput:
+            id: form_input
+            size_hint_x: 1
+            hint_text: app.lang.get(root.hint_text)
+            text: root.text
+            validation_type: root.validation_type
+            min_value: root.min_value
+            max_value: root.max_value
+            allow_negative: root.allow_negative
+            min_lenth: root.min_length
+            max_length: root.max_length
+            strict: root.strict
+            allow_none: root.allow_none
+            show_triangle_buttons: root.show_triangle_buttons
+            force_half_width: root.force_half_width
+            regex_filter: root.regex_filter
+            step: root.step
+            disabled: root.disabled
+        ErrorMessage:
+            text: app.lang.get(form_input.error_message).format(min_val=form_input.min_value, max_val=form_input.max_value, min_len=form_input.min_length, max_len=form_input.max_length)
+
+<CompFormSpinner>
+    FormLabel:
+        markup: True
+        text:
+            ('[b]' if root.label_bold else '') + \
+            app.lang.get(root.label_text, required=root.label_required) + \
+            ('[/b]' if root.label_bold else '') + \
+            ('\n[size=%d]%s[/size]' % (root.suggest_text_font_size, app.lang.get(root.suggest_text)) if root.suggest_text else '')
+        size_hint_x: 1 if not root.label_width else None
+        width: 0 if not root.label_width else root.label_width
+        bold: False #use markup [b][/b] instead
+    FormGroup:
+        spacing: dp(18)
+        pos_hint: {'center_y': 0.3}
+        orientation: 'vertical'
+        FormSpinner:
+            id: form_spinner
+            size_hint_x: 1
+            hint_text: app.lang.get(root.hint_text)
+            text: root.text
+            values: root.values
+            validation_type: root.validation_type
+            min_value: root.min_value
+            max_value: root.max_value
+            min_lenth: root.min_length
+            max_length: root.max_length
+            strict: root.strict
+            allow_none: root.allow_none
+            on_text: root.callback_on_text() if root.callback_on_text else None
+        ErrorMessage:
+            text: app.lang.get(form_spinner.error_message).format(min_val=form_spinner.min_value, max_val=form_spinner.max_value, min_len=form_spinner.min_length, max_len=form_spinner.max_length)
+
+<CompFormSlider>
+    FormLabel:
+        markup: True
+        text:
+            ('[b]' if root.label_bold else '') + \
+            app.lang.get(root.label_text, required=root.label_required) + \
+            ('[/b]' if root.label_bold else '') + \
+            ('\n[size=%d]%s[/size]' % (root.suggest_text_font_size, app.lang.get(root.suggest_text)) if root.suggest_text else '')
+        size_hint_x: 1 if not root.label_width else None
+        width: 0 if not root.label_width else root.label_width
+        bold: False #use markup [b][/b] instead
+    FormGroup:
+        spacing: dp(18)
+        pos_hint: {'center_y': 0.3}
+        orientation: 'vertical'
+        FormSlider:
+            id: form_slider
+            size_hint_x: 1
+            hint_text: app.lang.get(root.hint_text)
+            text: root.text
+            values: root.values
+            validation_type: root.validation_type
+            min_value: root.min_value
+            max_value: root.max_value
+            strict: root.strict
+            allow_none: root.allow_none
+            step: root.step
+            show_color_palette: root.show_color_palette
+            colormap_name: root.colormap_name if hasattr(root, 'colormap_name') else 'JET'
+        ErrorMessage:
+            text: app.lang.get(form_slider.error_message).format(min_val=form_slider.min_value, max_val=form_slider.max_value)
+
+
+#--------------------Font Size Components--------------------
+
+
+
+<PageHeader@Label>:
+    text: ''
+    size_hint_y: None
+    height: self.texture_size[1] + dp(10)
+    padding: [0, 0, 0, dp(10)]  # bottom padding
+
+    font_size: dp(28.8)  # 1.8em
+    color: COLORS['BLUE_BLACK']
+    bold: True
+    text_size: self.width, None
+    halign: 'left'
+    canvas.before:
+        Color:
+            rgba: COLORS['BLUE']
+        Rectangle:
+            pos: self.x, self.y
+            size: self.width, dp(2)
+
+<SectionHeader>: # For H3
+    text_size: self.width, None
+    size_hint_y: None
+    height: self.texture_size[1]
+    font_size: dp(22)
+    color: COLORS['BLUE_BLACK']
+    bold: True
+    padding: [dp(10), 0, 0, 0]
+    canvas.before:
+        Color:
+            rgba: COLORS['CYAN']
+        Rectangle:
+            pos: self.x, self.y
+            size: dp(4), self.height
+
+<SubSectionHeader>: # For H4
+    size_hint_y: None
+    font_size: dp(17.6)
+    color: COLORS['BLUE_BLACK']
+    text_size: self.width, None
+    height: self.texture_size[1] + dp(10)
+    bold: True
+    canvas.after:
+        Color:
+            rgba: COLORS['LIGHT_BLUE_GRAY']
+        Line:
+            points: self.x, self.y + dp(7.5), self.x + self.width, self.y + dp(7.5)
+            width: dp(1)
+
+
+
+#--------------------Table Components--------------------
+
+
+
+<TableHeaderCell>:
+    size_hint_y: None
+    height: max(dp(50), self.minimum_height)
+    font_size: dp(14.4)
+    padding: [dp(10), dp(5), dp(10), dp(5)]
+
+    Label:
+        bold: True
+        halign: 'left'
+        shorten: True
+        shorten_from: 'right'
+        pos_hint: {'center_y': 0.5}
+        color: COLORS['WHITE_BLUE']
+        text_size: self.width, None
+        size_hint: 1, None
+        height: self.texture_size[1]
+        text: app.lang.get(root.text)
+
+<TableCell>:
+    size_hint_y: None
+    height: max(root.min_height, self.minimum_height)
+    font_size: dp(14.4)
+    padding: [dp(20), dp(5), dp(10), dp(5)]
+    text_color: COLORS['MEDIUM_BLACK']
+    enable_markup: False
+
+    Label:
+        halign: 'left'
+        shorten: True
+        shorten_from: 'right'
+        pos_hint: {'center_y': 0.5}
+        color: root.text_color
+        text_size: self.width, None
+        size_hint: 1, None
+        height: self.texture_size[1]
+        text: app.lang.get(root.text_key, hex_color=root.format_args.get('hex_color')) if root.text_key and root.format_args and 'hex_color' in root.format_args else (app.lang.get(root.text_key).format(**root.format_args) if root.text_key and root.format_args else (app.lang.get(root.text_key) if root.text_key else root.text))
+        markup: root.enable_markup
+
+<TableImageCell>:
+    size_hint_y: None
+    height: max(root.min_height, self.minimum_height)
+    padding: [dp(20), dp(5), dp(10), dp(5)]
+
+    FormAsyncImage:
+        nocache: True
+        size_hint: None, 1
+        source: root.image_source if root.image_source else ''
+
+<TableButtonCell>:
+    size_hint_y: None
+    height: max(root.min_height, self.minimum_height)
+    padding: [dp(20), dp(5), dp(10), dp(5)]
+    spacing: dp(10)
+    FormButton:  # Button Chỉnh sửa
+        text: app.lang.get('table_button_edit')
+        opacity: 1 if self.text else 0
+        disabled: not self.text
+        on_release: root.edit_item()
+        text_color: COLORS['WHITE']
+
+    FormButton:  # Button Xóa
+        text: app.lang.get('table_button_delete')
+        opacity: 1 if self.text else 0
+        disabled: not self.text
+        on_release: root.on_delete_button()
+        text_color: COLORS['WHITE']
+        bg_color: COLORS['RED']
+
+<TableBackupButtonCell>:
+    size_hint_y: None
+    height: max(root.min_height, self.minimum_height)
+    padding: [dp(20), dp(5), dp(10), dp(5)]
+    spacing: dp(10)
+    custom_message: False
+    FormButton:  # Button backup
+        text: app.lang.get('table_button_backup')
+        opacity: 1 if self.text else 0
+        disabled: not self.text
+        on_release: root.edit_item()
+        text_color: COLORS['WHITE']
+
+<TableCopyButtonCell>:
+    size_hint_y: None
+    height: max(root.min_height, self.minimum_height)
+    padding: [dp(20), dp(5), dp(10), dp(5)]
+    spacing: dp(10)
+
+    FormButton:
+        text: app.lang.get('table_button_edit')
+        opacity: 1 if self.text else 0
+        disabled: not self.text or root.disable_edit_button
+        on_release: root.edit_item()
+        text_color: COLORS['WHITE']
+
+    FormButton:
+        text: app.lang.get('table_button_copy')
+        opacity: 1 if self.text else 0
+        disabled: not self.text
+        on_release: root.copy_item()
+        text_color: COLORS['WHITE']
+
+    FormButton:
+        text: app.lang.get('table_button_delete')
+        opacity: 1 if self.text else 0
+        disabled: not self.text
+        on_release: root.on_delete_button()
+        text_color: COLORS['WHITE']
+        bg_color: COLORS['RED']
+
+<DataTable>:
+    has_data: True
+    size_hint: 1, None
+    height: self.minimum_height + dp(5)
+    spacing: dp(1)
+    canvas.before:
+        Color:
+            rgba: COLORS['DATA_TABLE_BACKGROUND']
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<DataTableWithPagination@BoxLayout>:
+    orientation: 'vertical'
+    size_hint_y: None
+    height: self.minimum_height
+    spacing: dp(10)
+
+<PaginationButton>:
+    size_hint_x: None
+    width: dp(35)
+    height: dp(30)
+    font_size: dp(13.6)
+    background_normal: ''
+    background_color: COLORS['TRANSPARENT']
+
+    # Màu text dựa trên trạng thái
+    color: COLORS['WHITE'] if self.active else (COLORS['PAGINATION_TEXT_DISABLED'] if self.disabled else COLORS['MEDIUM_BLACK'])
+    bold: self.active if hasattr(self, 'active') else False
+
+    canvas.before:
+        Color:
+            rgba: COLORS['BLUE'] if self.active else (COLORS['PAGINATION_BG_DISABLED'] if self.disabled else COLORS['ALMOST_WHITE'])
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(4)]
+        Color:
+            rgba: COLORS['BLUE'] if self.active else (COLORS['PAGINATION_BORDER_DISABLED'] if self.disabled else COLORS['PAGINATION_BORDER_NORMAL'])
+        Line:
+            rounded_rectangle: (self.x + 0.5, self.y + 0.5, self.width - 1, self.height - 1, dp(4))
+            width: dp(1)
+
+
+
+#--------------------Image Group Components--------------------
+
+
+
+<ImageFrame>
+    source: ''
+    border_color: COLORS['BLUE']
+    padding: dp(10)
+    size_hint: 1, None
+    placeholder: app.lang.get('no_data_placeholder')
+    canvas.before:
+        Color:
+            rgba: COLORS['IMAGE_FRAME_BACKGROUND']
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(5)]
+        Color:
+            rgba: self.border_color
+        Line:
+            width: dp(1)
+            rectangle: self.x + 0.5, self.y + 0.5, self.width - 1, self.height - 1
+    Image:
+        size_hint: 1, 1
+        source: root.source
+        size: (root.width, root.height)
+        fit_mode: 'contain'
+        opacity: 1 if root.source else 0
+        nocache: True
+
+<ImageSelectionListWidget>:
+    clip_content: True
+    size_hint_y: None
+    height: dp(250)
+    scroll_type: ['bars']
+    bar_width: dp(8)
+    canvas.after:
+        Color:
+            rgba: COLORS['LIGHT_BLUE_GRAY']
+        Line:
+            rectangle: self.x + 0.5, self.y + 0.5, self.width - 1, self.height - 1
+            width: dp(1)
+
+<ImageSelectionItem>:
+    orientation: 'horizontal'
+    size_hint_y: None
+    height: dp(60)
+    spacing: dp(10)
+    padding: [dp(5), dp(8), dp(5), dp(8)]
+    group: ""
+    active: False
+    index: -1
+
+    canvas.before:
+        Color:
+            rgba: COLORS['WHITE_GRAY']
+        Line:
+            points: self.x + 0.5, self.y + 0.5, self.x + self.width - 1, self.y + 0.5  # Bottom line
+            width: dp(1)
+
+    FormCheckBox:
+        id: custom_checkbox
+        group: root.group
+        active: root.active
+        size_hint_x: None
+        pos_hint: {'center_y': 0.5}
+        padding: [dp(5), dp(3), dp(10), 0]
+        on_size: self.width = dp(18)
+
+    Image:
+        source: root.image_source
+        size_hint_x: None
+        width: dp(50)
+        height: dp(50)
+        fit_mode: 'contain'
+        pos_hint: {'center_y': 0.5}
+        padding: []
+        nocache: True
+        mipmap: True
+
+    Label:
+        text: root.text
+        text_size: self.width, None
+        halign: 'left'
+        valign: 'center'
+        font_size: dp(14.4)
+        color: COLORS['MEDIUM_BLACK']
+
+
+<AcquiredImageGalleryWidget>:
+    id: acquired_image_gallery
+    clip_content: True
+    size_hint_y: None
+    height: dp(200)
+    scroll_type: ['bars']
+    bar_width: dp(8)
+    cols_number: 10
+    canvas.after:
+        Color:
+            rgba: COLORS['VERY_LIGHT_GRAY']
+        Line:
+            rectangle: self.x + 0.5, self.y + 0.5, self.width - 1, self.height - 1
+            width: dp(1)
+
+
+    GridLayout:
+        id: content_layout
+        cols: root.cols_number
+        size_hint_y: None
+        width: self.minimum_width
+        height: self.minimum_height
+        spacing: dp(20)
+        padding: dp(10), dp(10)
+
+<ImageThumbnail>:
+    thumbnail_width: dp(135)
+    thumbnail_height: dp(83)
+
+    size_hint: None, None
+    size: self.thumbnail_width, self.thumbnail_height
+    fit_mode: 'contain'
+    nocache: True
+    mipmap: True
+    selected: False
+    canvas.before:
+        Color:
+            rgba: COLORS['LIGHT_BLUE'] if self.selected else COLORS['TRANSPARENT']
+        Line:
+            rectangle: self.x - 4.5, self.y - 4.5, self.width + 9, self.height + 9
+            width: dp(2)
+
+<ImageAlignmentWindow>
+    orientation: 'vertical'
+    size_hint: 1, None
+    spacing: dp(30) if root.is_visible else 0
+    padding: [dp(60), dp(30), dp(60), dp(30)] if root.is_visible else [0, 0, 0, 0]
+    height: self.minimum_height if root.is_visible else 0
+    opacity: 1 if root.is_visible else 0
+    disabled: not root.is_visible
+    pos_hint: {'center_x': 0.5} if root.is_visible else {'center_x': -1000} #move out the screen
+    canvas.before:
+        Color:
+            rgba: COLORS['ALMOST_WHITE']
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(4)]
+        Color:
+            rgba: COLORS['WHITE_GRAY']
+        Line:
+            rectangle: self.x + 0.5, self.y + 0.5, self.width - 1, self.height - 1
+            width: dp(1)
+
+    FormLabel:
+        markup: True
+        text: root.text if not root.required else root.text + "[color=#ff0000]*[/color]"
+        color: COLORS['BLUE']
+        font_size: dp(19.2)
+    FormLabel:
+        text: app.lang.get('image_file_label_B1')
+    FormGroup:
+        FormImageUploadButton:
+            size_hint: None, None
+            on_image_selected: root.upload_image(self.image_source)
+        FormGroup:
+            spacing:dp(4)
+            pos_hint: {"center_y": 0.5}
+            padding: [dp(14), 0, 0, 0]
+            FormDeleteButton:
+                id: image_delete_button
+                on_press: root.delete_image()
+                pos_hint: {"center_y": 0.4}
+            FormLabel:
+                size_hint_x: None
+                text: root.image_filename if root.image_filename else app.lang.get('no_file_selected')
+                bold: False
+                font_size: dp(14.4)
+                width: dp(500)
+                shorten: True
+                shorten_from: 'right'
+    ErrorMessage:
+        text: app.lang.get(root.error_image.error_message)
+        padding: [dp(20), 0, 0, 0]
+    FormGroup:
+        #spacing: dp(50)
+        FormLabel:
+            text: app.lang.get('preview_label_B1')
+            size_hint_x: None
+            width: dp(200)
+        FormGroup:
+            orientation: 'vertical'
+            height: self.minimum_height
+            BoxLayout:
+                size_hint: 1, None
+                height: dp(300) # display box height
+                canvas.before:
+                    Color:
+                        rgba: COLORS['DOVE_WHITE']
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                    Color:
+                        rgba: COLORS['LIGHT_GRAY']
+                    Line:
+                        rectangle: self.x + 0.5, self.y + 0.5, self.width - 1, self.height - 1
+                        width: dp(1)
+                DrawingBoard: #draw on the image using coords
+                    id: drawing_board
+                    size_hint: 1, 1
+                    image_width: root.ids.preview_image.texture_size[0]
+                    image_height: root.ids.preview_image.texture_size[1]
+                    preview_width: root.ids.preview_image.width
+                    preview_height: root.ids.preview_image.height
+                    preview_pos_x: root.ids.preview_image.pos[0]
+                    preview_pos_y: root.ids.preview_image.pos[1]
+                    image_top_left_x: root.ids.image_top_left_x.ids.margin_input
+                    image_top_left_y: root.ids.image_top_left_y.ids.margin_input
+                    image_bottom_right_x: root.ids.image_bottom_right_x.ids.margin_input
+                    image_bottom_right_y: root.ids.image_bottom_right_y.ids.margin_input
+                    reset_draw: root.reset_draw
+                    reset_coords: root.reset_coords
+                    image_region: root.image_region
+                    image_transform_params: root.image_transform_params
+                    padding: dp(5)
+                    Image:
+                        id: preview_image
+                        nocache: True
+                        fit_mode: 'contain'
+                        source: root.image_source
+                        opacity: 1 if root.image_source else 0
+                        on_source: root.update_image_region()
+                        on_pos: root.update_image_region()
+                        on_size: root.update_image_region()
+            FormLabel:
+                text: f'{root.image_width}x{root.image_height}' if root.image_width != None and root.image_height != None else ''
+                bold: False
+                font_size: dp(14.4)
+    FormLabel:
+        text: app.lang.get('sensor_data_embed_location_label_B1')
+        color: COLORS['MEDIUM_GRAY']
+    FormGroup:
+        padding: [dp(20), dp(10), 0, dp(20)]
+        FormLabel:
+            size_hint_x: None
+            text: app.lang.get('top_left_label')
+        FormGroup:
+            spacing: dp(80)
+            FormMarginInput:
+                id: image_top_left_x
+                size_hint_x: None
+                label_text: app.lang.get('x_coordinate_label')
+                hint_text: 'X'
+                min_value: 0
+                max_value: root.image_width
+                strict: True #cap to min/max
+            FormMarginInput:
+                id: image_top_left_y
+                size_hint_x: None
+                label_text: app.lang.get('y_coordinate_label')
+                hint_text: 'Y'
+                min_value: 0
+                max_value: root.image_height
+                strict: True #cap to min/max
+    FormGroup:
+        padding: [dp(20), dp(10), 0, dp(20)]
+        FormLabel:
+            size_hint_x: None
+            text: app.lang.get('bottom_right_label')
+        FormGroup:
+            spacing: dp(80)
+            FormMarginInput:
+                id: image_bottom_right_x
+                size_hint_x: None
+                label_text: app.lang.get('x_coordinate_label')
+                hint_text: 'X'
+                min_value: 0
+                max_value: root.image_width
+                strict: True #cap to min/max
+            FormMarginInput:
+                id: image_bottom_right_y
+                size_hint_x: None
+                label_text: app.lang.get('y_coordinate_label')
+                hint_text: 'Y'
+                min_value: 0
+                max_value: root.image_height
+                strict: True #cap to min/max
+
+    ErrorMessage:
+        id: alignment_error_message
+        text: app.lang.get(root.error_alignment.error_message)
+        padding: [dp(20), 0, 0, 0]
+
+    FormButton:
+        id: alignment_confirm_popup
+        text: app.lang.get('confirm_alignment_button')
+        on_release: root._show_alignment_confirm_popup()
+
+
+
+#--------------------Utilities--------------------
+
+<NoDataSpinnerOption>:
+    text: app.lang.get('no_data_spinner')
+
+<CustomDropdown>:
+    bar_width: dp(8)
+    scroll_type: ['bars']
+
+<CustomSpinnerOption>:
+    background_normal: ''
+    background_down: ''
+    background_color: COLORS['TRANSPARENT']
+    size_hint_y: None
+    height: dp(40)
+    font_size: dp(14.4)
+    halign: 'left'
+    text_size: self.width - dp(30), None
+    shorten: True
+    shorten_from: 'right'
+
+<PaginationInfo>:
+    size_hint_x: None
+    size_hint_y: None
+    width: dp(250)
+    height: dp(30)
+    font_size: dp(13.6)
+    color: COLORS['MEDIUM_GRAY']
+    text_size: self.size
+    halign: 'right'
+    valign: 'center'
+    text: app.lang.get('pagination_info_label').format(start_record=self.start_record, end_record=self.end_record, total_records=self.total_records)
+
+<PaginationControls@BoxLayout>:
+    orientation: 'horizontal'
+    size_hint_y: None
+    height: dp(30)
+    spacing: dp(10)
+
+<SeparatorDash@Widget>:
+    dashed: True
+    dash_width: dp(3)       # dash_length
+    dash_spacing: dp(2)     # khoảng cách dash
+    size_hint_y: None
+    height: dp(1)
+
+    canvas.before:
+        Color:
+            rgba: COLORS['VERY_LIGHT_GRAY']
+        Line:
+            points: self.x, self.center_y, self.right, self.center_y
+            width: self.height
+            dash_length: self.dash_width if self.dashed else 0
+            dash_offset: self.dash_spacing if self.dashed else 0
+
+<PopupTitle>
+    font_size: dp(22)
+    color: COLORS['MEDIUM_GRAY']
+    bold: True,
+    size_hint: (1, 1)
+    text_size: (dp(400), None)
+    halign: 'center'
+    valign: 'middle'
+    canvas.after:
+        Color:
+            rgba: COLORS['BLUE']
+        Line:
+            points: self.x, self.y - dp(30.0), self.x + self.width, self.y - dp(30.0)
+            width: dp(0.7)
+
+<PopupMessage>
+    color: COLORS['MEDIUM_GRAY']
+    size_hint: (1, None)
+    text_size: (dp(400), None)
+    halign: 'center'
+    valign: 'middle'
+    padding: [0, dp(25), 0, 0]
+
+<MyPopup>:
+    __safe_id: [ content_layout.__self__ ]
+    BoxLayout:
+        id: content_layout
+        orientation: "vertical"
+        size: root.width, root.height
+        #padding: 5
+        spacing: 50
+        canvas.before:
+            Color:
+                rgba: COLORS['MYPOPUP_BACKGROUND']
+            RoundedRectangle:
+                pos: self.x - 20, self.y - 20
+                size: self.width + 40, self.height + 60
+                radius: [dp(4)]
+
+<MyModal>:
+    __safe_id: [ content_layout.__self__ ]
+    BoxLayout:
+        id: content_layout
+        orientation: "vertical"
+        size: root.width, root.height
+        #padding: 5
+        spacing: 50
+        canvas.before:
+            Color:
+                rgba: COLORS['MYPOPUP_BACKGROUND']
+            RoundedRectangle:
+                pos: self.x - 20, self.y - 20
+                size: self.width + 40, self.height + 60
+                radius: [dp(4)]
+
+<LogViewerBox>:
+    id: log_scrollview
+    size_hint_y: None
+    do_scroll_x: False
+    bar_width: 6
+    scroll_type: ['bars']
+    scroll_y: 1
+    height: 300
+    canvas.before:
+        Color:
+            rgba: COLORS['BLACK']
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [4]
+    LogContainer:
+        id: log_container
+
+<LogContainer@GridLayout>
+    size_hint: 1, None
+    cols: 1
+    height: max(self.minimum_height, 300)
+    spacing: dp(4)
+    padding: dp(16)
+
+<KeyLabel>:
+    text_key: ''
+    format_args: None
+    markup_template: ''
+    markup: True if self.markup_template else False
+    text: self.markup_template.format(app.lang.get(self.text_key)) if self.markup_template and self.text_key else (app.lang.get(self.text_key).format(**self.format_args) if self.text_key and self.format_args else (app.lang.get(self.text_key) if self.text_key else ""))
+
+<StepIndicator>:
+    orientation: 'horizontal'
+    size_hint_y: None
+    height: dp(48)
+    spacing: dp(0)

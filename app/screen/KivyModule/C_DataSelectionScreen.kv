@@ -1,0 +1,239 @@
+#:import os os
+<ImageItem>:
+    orientation: 'vertical'
+    size_hint_y: None
+    height: dp(230)
+    padding: [dp(8), dp(8), dp(8), dp(5)]
+    spacing: dp(5)
+
+    canvas.before:
+        Color:
+            rgba: 0.741, 0.765, 0.78, 1
+        Line:
+            rectangle: self.x + 0.5, self.y + 0.5, self.width - 1, self.height - 1
+            width: dp(1)
+
+
+    FloatLayout:
+        size_hint_y: None
+        height: dp(140)
+        pos_hint: {'top': 1}
+        canvas.before:
+            Color:
+                rgba: COLORS['DOVE_WHITE']
+            Rectangle:
+                pos: self.x, self.y
+                size: self.width, self.height
+
+        AsyncImage:
+            source: root.source
+            fit_mode: 'contain'
+            nocache: True
+            mipmap: True
+            size_hint: 1, 1
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
+        FloatLayout:
+            size_hint: None, None
+            size: dp(85), dp(40)
+            pos_hint: {'right': 1, 'top': 1}
+            opacity: 1 if root.get_label_from_source() else 0
+            FormButton:
+                size_hint: None, None
+                pos_hint: {'right': 0.9, 'top': 0.8}
+                on_size: self.size = dp(85), dp(40)
+                font_size: dp(11)
+                bg_color: COLORS['YELLOW']
+                text_color: COLORS['BLACK']
+                text: root.get_label_from_source() or ""
+                enable_hover: False
+
+    BoxLayout:
+        orientation: 'horizontal'
+        height: dp(50)
+
+        BoxLayout:
+            id: radio_container
+            orientation: 'vertical'
+            padding: [dp(5), 0, 0, dp(5)]
+            size_hint_y: None
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: None, None
+            size: dp(50), dp(30)
+            padding: [0, 0, 0, dp(8)]
+            FormButton:
+                id: delete_button
+                text: app.lang.get('delete_button')
+                size_hint_x: None
+                on_size: self.size = dp(50), dp(30)
+                on_release: root.on_delete_press()
+                bg_color: COLORS['RED']
+
+<DataSelectionScreen>:
+    name: 'screen_C1_data_selection'
+    ScrollView:
+        id: scroll_screen_C1_data_selection
+        bar_width: dp(10)
+        scroll_type: ['bars']
+        effect_cls: "ScrollEffect" # Basic scroll effect
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: self.minimum_height
+            padding: dp(30)
+            spacing: dp(25)
+
+            PageHeader: # Page Title (H2)
+                text: app.lang.get('data_selection_title_C1')
+
+            SubSectionHeader:
+                text: app.lang.get('registered_datasets_title_C1')
+            DataTableWithPagination:
+                id: table_c1_data_selection
+                DataTable:
+                    id: data_table_c1_data_selection
+                    cols_width: [750, 400, 300]
+                    cols: 3
+                PaginationControls:
+                    id: pagination_box_c1_data_selection
+
+            Separator:
+
+            FormLabel:
+                markup: True
+                text: app.lang.get('dataset_name_input_label_C1', required=True)
+                size_hint_x: None
+                width: dp(240)
+                pos_hint: {'center_y': 0.5}
+                halign: 'left'
+                valign: 'middle'
+                padding: [0, dp(10), 0, 0]
+
+
+            FormGroup:
+                spacing: dp(15)
+                pos_hint: {'center_y': 0.3}
+                orientation: 'vertical'
+                FormInput:
+                    id: c1_dataset_name_input
+                    size_hint_x: 1
+                    hint_text: app.lang.get('dataset_name_input_hint_C1')
+                    validation_type: 'string'
+                    max_length: 100
+                    allow_none: False
+                ErrorMessage:
+                    text: app.lang.get(c1_dataset_name_input.error_message).format(max_len=c1_dataset_name_input.max_length)
+
+
+
+
+            FormLabel:
+                markup: True
+                text: app.lang.get('work_config_label_C1', required=True)
+                size_hint_x: 1
+                pos_hint: {'center_y': 0.5}
+                halign: 'left'
+                valign: 'middle'
+                padding: [0, dp(10), 0, 0]
+            FormGroup:
+                spacing: dp(15)
+                orientation: 'vertical'
+                FormSpinner:
+                    id: c1_work_config_select
+                    hint_text: app.lang.get('select_placeholder')
+                    size_hint_x: 1
+                    on_text: root.on_c1_work_config_selected()
+                    allow_none: False
+                ErrorMessage:
+                    text: app.lang.get(c1_work_config_select.error_message)
+
+
+            FormLabel:
+                markup: True
+                text: app.lang.get('folder_select_label_C1', required=True)
+                size_hint_x: 1
+                pos_hint: {'center_y': 0.5}
+                halign: 'left'
+                valign: 'middle'
+                padding: [0, dp(10), 0, 0]
+
+
+
+            FormLabel:
+                id: c1_folder_select_label
+                size_hint_x: 1
+                bold: False
+                pos_hint: {'center_y': 0.5}
+                halign: 'left'
+                valign: 'middle'
+                padding: [0, dp(20), 0, 0]
+                font_size: dp(14)
+
+                text: app.lang.get('folder_select_path_hint_C1') + ' ' + root.c1_folder_select_label_value if root.c1_folder_select_label_value else app.lang.get('folder_select_path_hint_C1') + ' ' + os.path.join(HISTOGRAM_FOLDER, app.lang.get('work_config_id_text'), '')
+
+
+            FormGroup:
+                orientation: 'horizontal'
+                spacing: dp(10)
+                padding: [0, dp(10), 0, 0]
+
+                FormGroup:
+                    spacing: dp(15)
+                    orientation: 'vertical'
+                    FormSpinner:
+                        id: c1_folder_select
+                        hint_text: app.lang.get('folder_select_hint_1_C1') if not root.c1_folder_select_label_value else app.lang.get('folder_select_hint_2_C1')
+                        size_hint_x: 1
+                        allow_none: False
+                        on_text: root.image_album.show_no_data_message()
+                    ErrorMessage:
+                        text: app.lang.get(c1_folder_select.error_message)
+                FormButton:
+                    id: upload_images_button
+                    text: app.lang.get('load_button')
+                    pos_hint: {'top': 1}
+                    on_release: root.upload_images()
+
+
+
+            Separator:
+                dashed: True
+
+
+            SubSectionHeader:
+                text: app.lang.get('image_list_usage_settings_title_C1')
+            BoxLayout:
+                id: image_album_container
+                orientation: 'vertical'
+                size_hint_y: None
+                height: dp(560)
+                padding: dp(10)
+                canvas.before:
+                    Color:
+                        rgba: COLORS['VERY_LIGHT_GRAY']
+                    Line:
+                        rounded_rectangle: (self.x + 0.5, self.y + 0.5, self.width - 1, self.height - 1, dp(4))
+                        width: dp(1)
+            ErrorMessage:
+                id: image_album_error
+                text: app.lang.get(self.error_message)
+                padding: [0, 0, 0, dp(10)]
+
+
+            Separator:
+
+            BoxLayout:
+                size_hint_y: None
+                height: dp(48)
+                Widget:
+                    size_hint_x: 1
+
+                FormButton:
+                    id: final_save_button
+                    text: app.lang.get('save_dataset_button')
+                    size_hint_x: None
+                    bold: True
+                    pos_hint: {'center_y': 0.5, 'right': 1}
+                    on_release: root.save_image_selections()
+                    bg_color: COLORS['GREEN']

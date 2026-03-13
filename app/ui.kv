@@ -1,0 +1,199 @@
+#:import COLORS app.libs.constants.colors.COLORS
+#:import DefaultCommon app.libs.constants.default_values.DefaultCommon
+#:import utils kivy.utils
+
+# Libs
+#:include app/libs/widgets/components.kv
+
+# Welcome screen
+#:include app/screen/KivyModule/WelcomeScreen.kv
+
+# Screen A
+#:include app/screen/KivyModule/A_SensorSettingsScreen.kv
+
+# Screen B
+#:include app/screen/KivyModule/B_DataGenerationScreen.kv
+#:include app/screen/KivyModule/B_WorkConfigScreen.kv
+
+# Screen C
+#:include app/screen/KivyModule/C_DataSelectionScreen.kv
+#:include app/screen/KivyModule/C_ModelTrainingScreen.kv
+#:include app/screen/KivyModule/C_TrainingResultsScreen.kv
+
+# Screen D
+#:include app/screen/KivyModule/D_AIDetectionExecutionScreen.kv
+#:include app/screen/KivyModule/D_DetectionResultsScreen.kv
+
+# Screen E
+#:include app/screen/KivyModule/E_SystemSettingsScreen.kv
+#:include app/screen/KivyModule/E_IniSettingsScreen.kv
+
+<MenuButton>
+    font_size: '14sp'
+    background_color: COLORS['TRANSPARENT']
+    color: COLORS['WHITE'] if root.active else COLORS['WHITE_SEMI_TRANSPARENT']
+    size_hint_y: None
+    height: dp(40)
+    text_size: self.width - dp(10), None
+
+<MenuLabel@Label>
+    bold: True
+    font_size: '16sp'
+    color: COLORS['WHITE_BLUE']
+    size_hint_y: None
+    height: dp(30)
+    halign:'left'
+    text_size: self.width, None
+
+<MenuSection@BoxLayout>
+    orientation: 'vertical'
+    padding: [dp(15), 0, 0, 0]
+    spacing: dp(10)
+    size_hint_y: None
+    height: self.minimum_height
+    canvas.before:
+        Color:
+            rgba: COLORS['MENU_SECTION_LINE']
+        Line:
+            points: self.x + dp(6.5), self.y - dp(3.5), self.x + dp(6.5), self.top + dp(3.5)
+            width: 1
+
+# --- Root Widget Definition ---
+RootBoxLayout:
+    orientation: 'horizontal'
+    # Sidebar
+    BoxLayout:
+        id: sidebar_root
+        orientation: 'vertical'
+        size_hint_x: None
+        width: dp(280)
+        spacing: dp(10)
+        canvas.before:
+            Color:
+                rgba: COLORS['BLUE_BLACK']
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        Label:
+            id: app_main_title_sidebar_kv # ID for app title in sidebar
+            text: app.lang.get("app_title")
+            bold: True
+            font_size: '20sp'
+            color: COLORS['WHITE_BLUE']
+            size_hint_y: None
+            height: dp(50)
+
+        FormSpinner:
+            id: lang_spinner
+            lang_list: list(DefaultCommon.LANGUAGES_CODE.keys())
+            values: self.lang_list
+            text: self.lang_list[0]
+            text_size: self.width - dp(10), None
+            pos_hint: {'center_x': 0.5}
+            size_hint: None, None
+            height: dp(40)
+            width: dp(120)
+            halign: 'center'
+            valign: 'middle'
+            enable_hover: True
+            arrow_texture_path: ""
+            bg_color: COLORS['BLUE_GRAY']
+            text_color: COLORS['WHITE']
+            border_color: COLORS['TRANSPARENT']
+            dropdown_bg_color: COLORS['DARK_BLUE']
+            dropdown_text_color: COLORS['WHITE']
+            dropdown_hover_color: COLORS['BLUE']
+            dropdown_hover_text_color: COLORS['WHITE']
+            on_text: app.switch_language(DefaultCommon.LANGUAGES_CODE[self.text])
+
+        Widget:
+            size_hint_y: None
+            height: dp(10)
+
+        ScrollView:
+            id: sidebar_scroll_kv
+            bar_width: dp(10)
+            scroll_type: ['bars']
+            effect_cls: "ScrollEffect"
+            on_size: app.on_sidebar_scroll_resize(self)
+            GridLayout:
+                id: sidebar_menu_grid_kv
+                cols: 1
+                size_hint_y: None
+                height: self.minimum_height
+                padding: dp(20)
+                spacing: dp(20)
+
+                # A. センサー動作設定
+                MenuLabel:
+                    text: app.lang.get("menu_A_header")
+                MenuSection:
+                    MenuButton:
+                        text: app.lang.get("menu_A_link")
+                        target_screen: 'screen_A_sensor_settings'
+                        size_hint_y: None
+                        height: dp(35)
+
+                # B. データ生成・可視化
+                MenuLabel:
+                    text: app.lang.get("menu_B_header")
+                MenuSection:
+                    MenuButton:
+                        id: menu_B1_link_kv
+                        text: app.lang.get("menu_B1_link")
+                        target_screen: 'screen_B1_work_config'
+                    MenuButton:
+                        id: menu_B2_link_kv
+                        text: app.lang.get("menu_B2_link")
+                        target_screen: 'screen_B2_data_generation'
+
+                # C. AI 学習機能
+                MenuLabel:
+                    text: app.lang.get("menu_C_header")
+                MenuSection:
+                    MenuButton:
+                        text: app.lang.get("menu_C1_link")
+                        target_screen: 'screen_C1_data_selection'
+                    MenuButton:
+                        text: app.lang.get("menu_C2_link")
+                        target_screen: 'screen_C2_model_training'
+                    MenuButton:
+                        text: app.lang.get("menu_C3_link")
+                        target_screen: 'screen_C3_training_results'
+
+                # D. AI検出機能
+                MenuLabel:
+                    text: app.lang.get("menu_D_header")
+                MenuSection:
+                    MenuButton:
+                        text: app.lang.get("menu_D1_link")
+                        target_screen: 'screen_D1_ai_detection_execution'
+                    MenuButton:
+                        text: app.lang.get("menu_D2_link")
+                        target_screen: 'screen_D2_detection_results'
+
+                # E. システム全体設定
+                MenuLabel:
+                    text: app.lang.get("menu_E_header")
+                MenuSection:
+                    MenuButton:
+                        text: app.lang.get("menu_E1_link")
+                        target_screen: 'screen_E1_system_settings'
+                    MenuButton:
+                        text: app.lang.get("menu_E2_link")
+                        target_screen: 'screen_E2_ini_settings'
+
+    # Content Area where Screens are managed
+    WindowManager:
+        id: screen_manager # This ID is crucial for app.root.ids.screen_manager
+        WelcomeScreen:
+        SensorSettingsScreen:
+        WorkConfigScreen:
+        DataGenerationScreen:
+        DataSelectionScreen:
+        ModelTrainingScreen:
+        TrainingResultsScreen:
+        AIDetectionExecutionScreen:
+        DetectionResultsScreen:
+        SystemSettingsScreen:
+        IniSettingsScreen:

@@ -1,0 +1,306 @@
+#:import DefaultValuesB1 app.libs.constants.default_values.DefaultValuesB1
+
+<WorkConfigScreen>:
+    name: 'screen_B1_work_config'
+    ScrollView:
+        id: main_scroll_view
+        bar_width: dp(10)
+        scroll_type: ['bars']
+        effect_cls: "ScrollEffect"
+        FormContent:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: self.minimum_height
+            padding: dp(30)
+            spacing: dp(30)
+
+            PageHeader: # Page Title (H2)
+                text: app.lang.get('work_config_title_B1')
+
+            SubSectionHeader:
+                text: app.lang.get('registered_work_configs_title_B1')
+
+            DataTableWithPagination:
+                DataTable:
+                    id: data_table_b_work_config
+                    cols_width: [500, 250, 300, 250, 300]
+                    cols: 5
+                    #define cols width here eg: [500,200,300,400,-1] where -1 is automatic
+                PaginationControls:
+                    id: pagination_box_b_work_config
+
+            Separator:
+
+            CompFormInput:
+                id: b_setting_name
+                orientation: 'vertical'
+                spacing: dp(18)
+                label_text: 'work_setting_name_label_B1'
+                label_required: DefaultValuesB1.B_SETTING_NAME_REQUIRED
+                hint_text: 'work_setting_name_hint_B1'
+                validation_type: 'string'
+                max_length: DefaultValuesB1.B_SETTING_NAME_MAX_LENGTH
+                allow_none: not DefaultValuesB1.B_SETTING_NAME_REQUIRED
+
+            SectionHeader:
+                text: app.lang.get('use_sensor_settings_title_B1')
+
+            CompFormSpinner:
+                id: prophesee_setting
+                label_text: 'select_sensor_settings_label_B1'
+                label_required: DefaultValuesB1.PROPHESEE_SETTING_REQUIRED
+                hint_text: 'select_placeholder'
+                validation_type: 'string'
+                allow_none: not DefaultValuesB1.PROPHESEE_SETTING_REQUIRED
+
+            SectionHeader:
+                text: app.lang.get('event_load_settings_title_B1')
+
+            CompFormInput:
+                id: delta_t
+                label_text: 'delta_t_label_B1'
+                label_required: DefaultValuesB1.DELTA_T_REQUIRED
+                hint_text: 'delta_t_hint_B1'
+                validation_type: 'int'
+                min_value: DefaultValuesB1.DELTA_T_MIN_VALUE
+                max_value: DefaultValuesB1.DELTA_T_MAX_VALUE
+                allow_none: not DefaultValuesB1.DELTA_T_REQUIRED
+
+            FormGroup:
+                orientation: 'vertical'
+                FormGroup:
+                    FormLabel:
+                        id: i_roi_b1
+                        text: app.lang.get('roi_label_B1')
+                        size_hint_x: None
+                        width: dp(300)
+                    FormCheckBox:
+                        id: i_roi_checkbox
+                        active: DefaultValuesB1.I_ROI_CHECKBOX
+                        on_active: root.on_i_roi_check_box(self.active)
+                        text: app.lang.get('use_roi_label_B1')
+                        enable_conditional_layout: True
+                        target_id: 'i_roi_input'
+                BoxLayout:
+                    id: i_roi_input
+                    orientation: 'vertical'
+                    spacing: dp(30)
+                    size_hint: 1, None
+                    height: self.minimum_height
+                    opacity: 1 #on by default
+                    disabled: False
+                    error_message: ''
+                    FormLabel:
+                        size_hint_x: None
+                        text: app.lang.get('coordinates_input_label_B1')
+                    FormGroup:
+                        padding: [dp(20), dp(10), 0, dp(20)]
+                        FormLabel:
+                            size_hint_x: None
+                            text: app.lang.get('top_left_label')
+                        FormGroup:
+                            spacing: dp(80)
+                            FormMarginInput:
+                                id: top_left_x
+                                size_hint_x: None
+                                label_text: app.lang.get('x_coordinate_label')
+                                hint_text: 'X'
+                                min_value: DefaultValuesB1.ROI_TOP_LEFT_X_MIN_VALUE
+                                max_value: DefaultValuesB1.ROI_TOP_LEFT_X_MAX_VALUE
+                                validation_type: 'int'
+                                allow_none: not DefaultValuesB1.ROI_TOP_LEFT_X_REQUIRED
+                                on_error_message: root.validate_coords()
+                            FormMarginInput:
+                                id: top_left_y
+                                size_hint_x: None
+                                label_text: app.lang.get('y_coordinate_label')
+                                hint_text: 'Y'
+                                min_value: DefaultValuesB1.ROI_TOP_LEFT_Y_MIN_VALUE
+                                max_value: DefaultValuesB1.ROI_TOP_LEFT_Y_MAX_VALUE
+                                validation_type: 'int'
+                                allow_none: not DefaultValuesB1.ROI_TOP_LEFT_Y_REQUIRED
+                                on_error_message: root.validate_coords()
+                    FormGroup:
+                        padding: [dp(20), dp(10), 0, dp(10)]
+                        FormLabel:
+                            size_hint_x: None
+                            text: app.lang.get('bottom_right_label')
+                        FormGroup:
+                            spacing: dp(80)
+                            FormMarginInput:
+                                id: bottom_right_x
+                                size_hint_x: None
+                                label_text: app.lang.get('x_coordinate_label')
+                                hint_text: 'X'
+                                min_value: DefaultValuesB1.ROI_BOTTOM_RIGHT_X_MIN_VALUE
+                                max_value: DefaultValuesB1.ROI_BOTTOM_RIGHT_X_MAX_VALUE
+                                validation_type: 'int'
+                                allow_none: not DefaultValuesB1.ROI_BOTTOM_RIGHT_X_REQUIRED
+                                on_error_message: root.validate_coords()
+                            FormMarginInput:
+                                id: bottom_right_y
+                                size_hint_x: None
+                                label_text: app.lang.get('y_coordinate_label')
+                                hint_text: 'Y'
+                                min_value: DefaultValuesB1.ROI_BOTTOM_RIGHT_Y_MIN_VALUE
+                                max_value: DefaultValuesB1.ROI_BOTTOM_RIGHT_Y_MAX_VALUE
+                                validation_type: 'int'
+                                allow_none: not DefaultValuesB1.ROI_BOTTOM_RIGHT_Y_REQUIRED
+                                on_error_message: root.validate_coords()
+                    ErrorMessage:
+                        size_hint: 1, None
+                        text: app.lang.get(i_roi_input.error_message) #no need format
+                        padding: [dp(20), 0, 0, 0]
+
+            CompFormSpinner:
+                id: b_bias_path_select
+                label_text: 'bias_select_label_B1'
+                label_required: DefaultValuesB1.B_BIAS_PATH_SELECT_REQUIRED
+                hint_text: 'select_placeholder'
+                validation_type: 'string'
+                allow_none: not DefaultValuesB1.B_BIAS_PATH_SELECT_REQUIRED
+
+            FormGroup:
+                FormLabel:
+                    text: app.lang.get('sensor_filter_label_B1')
+                    size_hint_x: None
+                    width: dp(300)
+                FormGroup:
+                    FormRadioButton:
+                        id: sensor_filter
+                        size_hint_x: None
+                        orientation: 'horizontal'
+                        label: ['None', 'STC', 'Trail']
+                        group: 'sensor_filter'
+                        on_text: root.on_sensor_filter()
+
+            CompFormInput:
+                id: sensor_filter_threshold
+                label_text: 'sensor_filter_threshold_label_B1'
+                label_required: sensor_filter.text in ('STC', 'Trail')
+                validation_type: 'int'
+                min_value: DefaultValuesB1.SENSOR_FILTER_THRESHOLD_MIN_VALUE
+                max_value: DefaultValuesB1.SENSOR_FILTER_THRESHOLD_MAX_VALUE
+
+            CompFormInput:
+                id: on_event_his_value
+                label_text: 'on_event_op_label_B1'
+                label_required: DefaultValuesB1.ON_EVENT_HIS_VALUE_REQUIRED
+                validation_type: 'int'
+                min_value: DefaultValuesB1.ON_EVENT_HIS_VALUE_MIN_VALUE
+                max_value: DefaultValuesB1.ON_EVENT_HIS_VALUE_MAX_VALUE
+                allow_none: not DefaultValuesB1.ON_EVENT_HIS_VALUE_REQUIRED
+                suggest_text: 'on_event_op_suggest_B1'
+
+            CompFormInput:
+                id: off_event_his_value
+                label_text: 'off_event_op_label_B1'
+                label_required: DefaultValuesB1.OFF_EVENT_HIS_VALUE_REQUIRED
+                validation_type: 'int'
+                min_value: DefaultValuesB1.OFF_EVENT_HIS_VALUE_MIN_VALUE
+                max_value: DefaultValuesB1.OFF_EVENT_HIS_VALUE_MAX_VALUE
+                allow_none: not DefaultValuesB1.OFF_EVENT_HIS_VALUE_REQUIRED
+                suggest_text: 'off_event_op_suggest_B1'
+
+            CompFormSlider:
+                id: seg_kernel_size
+                label_text: 'seg_kernel_size_label_B1'
+                label_required: DefaultValuesB1.SEG_KERNEL_SIZE_REQUIRED
+                validation_type: 'int_odd'
+                step: 2
+                min_value: DefaultValuesB1.SEG_KERNEL_SIZE_MIN_VALUE
+                max_value: DefaultValuesB1.SEG_KERNEL_SIZE_MAX_VALUE
+                allow_none: not DefaultValuesB1.SEG_KERNEL_SIZE_REQUIRED
+
+            CompFormSlider:
+                id: seg_threshold
+                label_text: 'seg_threshold_label_B1'
+                label_required: DefaultValuesB1.SEG_THRESHOLD_REQUIRED
+                validation_type: 'int'
+                step: 1
+                min_value: DefaultValuesB1.SEG_THRESHOLD_MIN_VALUE
+                max_value: DefaultValuesB1.SEG_THRESHOLD_MAX_VALUE
+                allow_none: not DefaultValuesB1.SEG_THRESHOLD_REQUIRED
+
+            CompFormSlider:
+                id: seg_padding
+                label_text: 'seg_padding_label_B1'
+                label_required: DefaultValuesB1.SEG_PADDING_REQUIRED
+                validation_type: 'int'
+                step: 1
+                min_value: DefaultValuesB1.SEG_PADDING_MIN_VALUE
+                max_value: DefaultValuesB1.SEG_PADDING_MAX_VALUE
+                allow_none: not DefaultValuesB1.SEG_PADDING_REQUIRED
+
+            CompFormSlider:
+                id: histogram_add_pixel_params
+                label_text: 'movement_speed_correction_label_B1'
+                label_required: DefaultValuesB1.HISTOGRAM_ADD_PIXEL_PARAMS_REQUIRED
+                validation_type: 'float'
+                step: 0.01
+                min_value: DefaultValuesB1.HISTOGRAM_ADD_PIXEL_PARAMS_MIN_VALUE
+                max_value: DefaultValuesB1.HISTOGRAM_ADD_PIXEL_PARAMS_MAX_VALUE
+                allow_none: not DefaultValuesB1.HISTOGRAM_ADD_PIXEL_PARAMS_REQUIRED
+
+            FormButton:
+                id: confirm_settings
+                text: app.lang.get('confirm_settings_button_B1')
+                on_release: root.run_confirmation()
+                bg_color: COLORS['BLUE']
+
+            SubSectionHeader:
+                text: app.lang.get('generated_event_data_title_B1')
+
+            CompFormSpinner:
+                id: color_map
+                label_text: 'color_select_label_B1'
+                label_required: DefaultValuesB1.COLOR_MAP_REQUIRED
+                validation_type: 'string'
+                values: ['JET', 'AUTUMN', 'BONE', 'HOT', 'RAINBOW']
+                allow_none: not DefaultValuesB1.COLOR_MAP_REQUIRED
+
+            FormButton:
+                text: app.lang.get('switch_button')
+                on_release: root.async_update_temp_histogram()
+
+            FormLabel:
+                text: app.lang.get('display_image_label_B1')
+            ImageFrame:
+                id: show_confirm_hist
+                source: ''
+                size_hint: None, None
+                padding: 0
+                width: 300
+                height: 250
+                border_color: COLORS['LIGHT_GRAY']
+                pos_hint: {'center_x': 0.5}
+
+            SectionHeader:
+                text: app.lang.get('alignment_image_registration_title_B1')
+
+            ImageAlignmentWindow:
+                id: alignment_1
+                text: app.lang.get('alignment_image_n_title_B1').format(N=1)
+                output_name: "alignment_1"
+                required: DefaultValuesB1.ALIGNMENT_1_REQUIRED
+            ImageAlignmentWindow:
+                id: alignment_2
+                text: app.lang.get('alignment_image_n_title_B1').format(N=2)
+                output_name: "alignment_2"
+                required: DefaultValuesB1.ALIGNMENT_2_REQUIRED
+            ImageAlignmentWindow:
+                id: alignment_3
+                text: app.lang.get('alignment_image_n_title_B1').format(N=3)
+                output_name: "alignment_3"
+                required: DefaultValuesB1.ALIGNMENT_3_REQUIRED
+
+            Separator:
+            Separator:
+
+            FormButton:
+                text: app.lang.get('save_work_config_button')
+                size_hint_x: None
+                bold: True
+                pos_hint: {'center_y': 0.5, 'right': 1}
+                on_release: root.save_work_configs()
+                bg_color: COLORS['GREEN']

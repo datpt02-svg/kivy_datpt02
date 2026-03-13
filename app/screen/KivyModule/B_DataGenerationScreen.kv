@@ -1,0 +1,209 @@
+#:import HISTOGRAM_FOLDER app.env.HISTOGRAM_FOLDER
+#:import DefaultValuesB2 app.libs.constants.default_values.DefaultValuesB2
+
+<DataGenerationScreen>:
+    name: 'screen_B2_data_generation'
+    ScrollView:
+        id: main_scroll_view
+        bar_width: dp(10)
+        scroll_type: ['bars']
+        effect_cls: "ScrollEffect"
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: self.minimum_height
+            padding: dp(30)
+            spacing: dp(25)
+
+            PageHeader: # Page Title (H2)
+                text: app.lang.get('data_generation_title_B2', 'Screen B2 Title Missing')
+
+            FormGroup:
+                FormLabel:
+                    markup: DefaultValuesB2.SELECT_SETTINGS_REQUIRED
+                    text: app.lang.get('work_config_select_label_B2', required=DefaultValuesB2.SELECT_SETTINGS_REQUIRED)
+                    size_hint_x: None
+                    width: dp(300)
+                FormGroup:
+                    spacing: dp(18)
+                    pos_hint: {'center_y': 0.3}
+                    orientation: 'vertical'
+                    FormSpinner:
+                        id: select_settings
+                        validation_type: 'string'
+                        hint_text: app.lang.get('select_placeholder')
+                        on_text: root.on_work_config_selected()
+                        allow_none: not DefaultValuesB2.SELECT_SETTINGS_REQUIRED
+                    ErrorMessage:
+                        text: app.lang.get(select_settings.error_message)
+
+            CompFormInput:
+                id: id_label
+                label_text: 'id_label_B2'
+                hint_text: 'id_label_placeholder_B2'
+                label_required: False
+                validation_type: 'string'
+                min_length: 0
+                max_length: 8
+                allow_none: True
+            FormGroup:
+                FormLabel:
+                    markup: DefaultValuesB2.FOLDER_SELECT_REQUIRED
+                    text: app.lang.get('select_folder_B2', required=DefaultValuesB2.FOLDER_SELECT_REQUIRED)
+                    size_hint_x: None
+                    width: dp(300)
+                FormGroup:
+                    spacing: dp(18)
+                    pos_hint: {'center_y': 0.3}
+                    orientation: 'vertical'
+                    FormSpinner:
+                        id: folder_select
+                        validation_type: 'string'
+                        hint_text: app.lang.get('select_folder_hint_text_B2')
+                        folder_list: [] #from python
+                        make_folder_text: app.lang.get('create_folder_text_B2')
+                        values: [] if not root.ids.select_settings.text else ([self.make_folder_text] if not self.folder_list else [self.make_folder_text] + self.folder_list)
+                        on_text:
+                            root.on_folder_select()
+                        allow_none: not DefaultValuesB2.FOLDER_SELECT_REQUIRED
+                    ErrorMessage:
+                        text: app.lang.get(folder_select.error_message)
+
+            FormButton:
+                text: app.lang.get("start_data_generation_button")
+                on_press: root.run_generate()
+                bg_color: COLORS['BLUE']
+
+            FormGroup:
+                padding: [0,0,0,0]
+                canvas.after:
+                    Color:
+                        rgba: COLORS['LIGHT_BLUE_GRAY']
+                    Line:
+                        points: self.x, self.y - dp(7.5), self.x + self.width, self.y - dp(7.5)
+                        width: dp(1)
+                Label:
+                    text: app.lang.get("acquired_images_title_B2")
+                    size_hint_y: None
+                    font_size: dp(17.6)
+                    color: COLORS['BLUE_BLACK']
+                    text_size: self.width, None
+                    height: self.texture_size[1] + dp(10)
+                    bold: True
+                FormOpenFolderButton:
+                    id: open_folder_button
+                    text: app.lang.get("open_folder_button")
+
+            BoxLayout:
+                size_hint_y: None
+                height: self.minimum_height
+                padding: [0, dp(10), 0, dp(10)]
+                canvas.before:
+                    Color:
+                        rgba: COLORS['ALMOST_WHITE']
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(5)]
+                    Color:
+                        rgba: COLORS['VERY_LIGHT_GRAY']
+                    Line:
+                        width: dp(1)
+                        rounded_rectangle: (self.x + 0.5, self.y + 0.5, self.width - 1, self.height - 1, dp(4))
+                CustomScrollView:
+                    do_scroll_x: False
+                    do_scroll_y: True
+                    bar_width: dp(6)
+                    scroll_type: ['bars']
+                    size_hint_y: None
+                    height: dp(450)
+                    CollectedImageLayout:
+                        id: collected_image
+
+<CollectedImageLayout>:
+    cols: 5
+    padding: (dp(10), 0, dp(10), 0)
+    spacing: dp(10)
+    col_default_width: (self.parent.width - dp(60)) / (self.cols if self.cols > 0 else 1) #
+    size_hint: 1, None
+    height: self.minimum_height
+
+<NoDataLabel>:
+    text: app.lang.get("no_data_placeholder")
+    halign: 'center'
+    valign: 'middle'
+    color: [0.6, 0.6, 0.6, 1]
+    font_size: dp(20)
+    size_hint: (None, None)
+    text_size: (None, None)
+    height: self.custom_parent.height if self.custom_parent else 0
+    width: self.custom_parent.width if self.custom_parent else 0
+
+<CreateFolderModal>:
+    size_hint: None, None
+    size: dp(750), dp(250)
+    auto_dismiss: False
+    FormGroup:
+        orientation: 'vertical'
+        padding: [dp(20), dp(20), dp(20), dp(0)]
+        spacing: dp(30)
+
+        FormGroup:
+            orientation: 'vertical'
+            size_hint: 1, 1
+            width: self.minimum_width
+            FormLabel:
+                text: app.lang.get("create_folder_modal_label_B2")
+                size_hint: None, None
+                height: dp(40)
+                width: dp(300)
+                font_size: dp(22)
+                bold: True
+                halign: 'center'
+                valign: 'middle'
+                text_size: self.size
+                pos_hint: {"center_x": 0.5}
+
+        FormGroup:
+            orientation: 'vertical'
+            FormGroup:
+                height: dp(40)
+                FormLabel:
+                    id: output_dir_label
+                    text: f'{self.base_text} {self.path_text}\\' if self.id_text else f'{self.base_text} {self.placeholder_path_text}\\'
+                    base_text: app.lang.get("folder_select_path_hint_B2")
+                    placeholder_path_text: f"{HISTOGRAM_FOLDER}\\{self.placeholder}"
+                    path_text: f"{HISTOGRAM_FOLDER}\\{self.id_text}"
+                    placeholder: app.lang.get('work_config_id_text')
+                    id_text: ""
+                    bold: False
+                    width: dp(300)
+            FormGroup:
+                spacing: dp(18)
+                pos_hint: {'center_y': 0.3}
+                orientation: 'vertical'
+                FormGroup:
+                    height: dp(40)
+                    FormInput:
+                        id: new_folder_name
+                        size_hint_x: 1
+                        hint_text: app.lang.get("new_folder_name_hint_text_B2")
+                        validation_type: 'string'
+                        max_length: DefaultValuesB2.NEW_FOLDER_NAME_MAX_LENGTH
+                ErrorMessage:
+                    text: app.lang.get(new_folder_name.error_message).format(max_len=new_folder_name.max_length)
+        FormGroup:
+            orientation: 'horizontal'
+            size_hint_x: None
+            width: self.minimum_width
+            pos_hint: {"center_x": 0.5}
+            FormButton:
+                text: app.lang.get("close_button_label")
+                min_width: dp(140)
+                on_press: root.dismiss()
+            FormFolderCreateButton:
+                id: create_folder_button
+                text: app.lang.get("add_button_label")
+                min_width: dp(140)
+                on_press: root.on_folder_create_button()
+                on_folder_created: root.on_folder_created()

@@ -1,0 +1,16 @@
+[general]
+; Master switch for the cleanup process
+; If false, no deletion will be performed even if the script is executed
+enabled = True
+; Logging settings
+enable_logging = True
+log_file = auto_cleaner.log
+
+
+; ===== Cleanup job definitions =====
+
+[detection_results]
+; Target directory to clean
+target_dir =
+; Delete files older than this number of days
+days_to_keep = 30

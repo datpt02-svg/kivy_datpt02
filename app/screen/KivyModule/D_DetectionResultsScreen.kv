@@ -1,0 +1,102 @@
+<DetectionResultsScreen>:
+    name: 'screen_D2_detection_results'
+    ScrollView:
+        id: main_scroll_view
+        bar_width: dp(10)
+        scroll_type: ['bars']
+        effect_cls: "ScrollEffect" # Basic scroll effect
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: self.minimum_height
+            padding: dp(30)
+            spacing: dp(25)
+
+            PageHeader: # Page Title (H2)
+                text: app.lang.get('detection_results_list_title_D2', 'Screen D2 Title Missing')
+
+            FormGroup:
+                padding: dp(30)
+                spacing: dp(30)
+                orientation: 'vertical'
+                canvas.before:
+                    Color:
+                        rgba: COLORS['WHITE_SMOKE']
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(5)]
+                SubSectionHeader:
+                    text: app.lang.get('filter_conditions_title_D2')
+
+                FormGroup:
+                    spacing: dp(60)
+                    FormGroup:
+                        orientation: 'vertical'
+                        FormLabel:
+                            size_hint_x: None
+                            width: dp(150)
+                            text: app.lang.get('work_select_label_D2')
+                        FormSpinner:
+                            id: select_settings
+                            validation_type: 'string'
+                            db_data: [] #from python
+                            values: [app.lang.get('all_option_D2')] if not self.db_data else [app.lang.get('all_option_D2')] + self.db_data
+                            on_text: root.on_work_config_selected()
+                            text: app.lang.get('all_option_D2')
+                    FormGroup:
+                        orientation: 'vertical'
+                        FormLabel:
+                            size_hint_x: None
+                            width: dp(150)
+                            text: app.lang.get('date_label_D2')
+                        FormDateInput:
+                            id: date_filter
+                            size_hint: 1, None
+                            hint_text: 'yyyy/mm/dd'
+                    FormGroup:
+                        orientation: 'vertical'
+                        FormLabel:
+                            size_hint_x: None
+                            width: dp(150)
+                            text: app.lang.get('detection_result_label_D2')
+                        FormRadioButton:
+                            id: detection_result_filter
+                            size_hint: None, None
+                            orientation: 'horizontal'
+                            label: [app.lang.get('all_option_D2'), app.lang.get('ok_option_D2'), app.lang.get('ng_option_D2')]
+                            group: 'detection_result'
+                    FormButton:
+                        text: app.lang.get('apply_filter_button_D2')
+                        on_release: root.on_filter_button()
+
+            FormGroup:
+                padding: [0,0,dp(30),0]
+                canvas.after:
+                    Color:
+                        rgba: COLORS['LIGHT_BLUE_GRAY']
+                    Line:
+                        points: self.x, self.y - dp(7.5), self.x + self.width, self.y - dp(7.5)
+                        width: dp(1)
+                Label:
+                    text: app.lang.get('detection_results_table_title_D2')
+                    size_hint_y: None
+                    font_size: dp(17.6)
+                    color: COLORS['BLUE_BLACK']
+                    text_size: self.width, None
+                    height: self.texture_size[1] + dp(10)
+                    bold: True
+                FormOpenFolderButton:
+                    id: open_folder_button
+                    text: app.lang.get('open_folder_button')
+                    #path defined in python
+
+            DataTableWithPagination:
+                DataTable:
+                    id: data_table_d_detection_list
+                    cols_width: [100, 200, 400, 250, 200, 200, 100]
+                    cols: 7
+                PaginationControls:
+                    id: pagination_box_d_detection_list
+
+            Separator:

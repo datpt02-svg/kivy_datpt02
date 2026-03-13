@@ -1,0 +1,254 @@
+<FormInputSpinnerBlocker@BoxLayout>:
+    orientation: 'vertical'
+    size_hint_y: None
+    size_hint_x: 0.5
+    spacing: dp(30)
+    padding: [0, dp(10), 0, 0]
+
+    # props để thay đổi nội dung
+    label_key: ''
+    hint_key: ''
+
+    FormLabel:
+        markup: True
+        text: app.lang.get(root.label_key)
+        size_hint_x: 1
+        pos_hint: {'center_y': 0.5}
+        halign: 'left'
+        valign: 'middle'
+        padding: [0, dp(20), 0, 0]
+
+    FormGroup:
+        spacing: dp(15)
+        orientation: 'vertical'
+
+        AnchorLayout:
+            size_hint_y: None
+            height: spinner.height
+            FormSpinner:
+                id: spinner
+                hint_text: app.lang.get(root.hint_key)
+                size_hint_x: 1
+            LocalTouchBlocker:
+
+        ErrorMessage:
+            id: error_msg
+
+
+<FormBlocker@BoxLayout>:
+    orientation: 'vertical'
+    size_hint_y: None
+    spacing: dp(25)
+    height: self.minimum_height
+    # props để thay đổi nội dung
+    label_key: ''
+    required: False
+
+    FormLabel:
+        markup: True
+        text: app.lang.get(root.label_key, required=root.required) if root.required else app.lang.get(root.label_key)
+        pos_hint: {'center_y': 0.5}
+        halign: 'left'
+        valign: 'middle'
+        padding: [0, dp(20), 0, 0]
+
+
+<ModelTrainingScreen>:
+    name: 'screen_C2_model_training'
+    ScrollView:
+        id: scroll_screen_C2_model_training
+        bar_width: dp(10)
+        scroll_type: ['bars']
+        effect_cls: "ScrollEffect" # Basic scroll effect
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: self.minimum_height
+            padding: dp(30)
+            spacing: dp(20)
+
+            PageHeader: # Page Title (H2)
+                text: app.lang.get('model_training_title_C2')
+
+            BoxLayout:
+                size_hint_y: None
+                height: dp(5)
+
+
+            FormBlocker:
+                label_key: 'model_name_label_C2'
+                required: True
+                FormGroup:
+                    spacing: dp(15)
+                    orientation: 'vertical'
+                    AnchorLayout:
+                        size_hint_y: None
+                        height: c2_model_name_input.height
+                        FormInput:
+                            id: c2_model_name_input
+                            size_hint_x: 1
+                            validation_type: 'string'
+                            max_length: 100
+                            allow_none: False
+                            hint_text: app.lang.get('model_name_hint_C2')
+                        LocalTouchBlocker:
+
+                    ErrorMessage:
+                        text: app.lang.get(c2_model_name_input.error_message).format(max_len=c2_model_name_input.max_length)
+
+            FormBlocker:
+                label_key: 'select_training_data_label_C2'
+                required: True
+                FormGroup:
+                    spacing: dp(15)
+                    orientation: 'vertical'
+                    AnchorLayout:
+                        size_hint_y: None
+                        height: c2_dataset_select.height
+                        FormSpinner:
+                            id: c2_dataset_select
+                            hint_text: app.lang.get('select_placeholder')
+                            size_hint_x: 1
+                            validation_type: 'string'
+                            allow_none: False
+                        LocalTouchBlocker:
+
+                    ErrorMessage:
+                        text: app.lang.get(c2_dataset_select.error_message)
+
+
+
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                spacing: dp(0)
+                height: self.minimum_height
+
+                FormBlocker:
+                    label_key: 'learn_method_label_C2'
+                    required: False
+                    FormGroup:
+                        orientation: 'vertical'
+                        AnchorLayout:
+                            size_hint_y: None
+                            height: c2_training_method_select.height
+                            FormRadioButton:
+                                id: c2_training_method_select
+                                label: [app.lang.get('learn_method_1'), app.lang.get('learn_method_2')]
+                                target_ids: ['', 'parallel_patch_size_input_box']
+                                group: 'c2_training_method'
+                                enable_conditional_layout: True
+                                size_hint_x: 1
+                                on_size: self.height = dp(30)
+                            LocalTouchBlocker:
+
+
+                BoxLayout:
+                    orientation: 'horizontal'
+                    size_hint_y: None
+                    spacing: dp(30)
+
+                    FormInputSpinnerBlocker:
+                        id: patch_size_1_select
+                        label_key: 'patch_size_1_label_C2'
+                        hint_key: 'select_placeholder'
+
+                    FormInputSpinnerBlocker:
+                        id: input_size_1_select
+                        label_key: 'input_size_1_label_C2'
+                        hint_key: 'select_placeholder'
+
+
+
+                BoxLayout:
+                    id: parallel_patch_size_input_box
+                    orientation: 'horizontal'
+                    spacing: dp(30)
+                    size_hint_x: None
+                    size_hint_y: None
+                    height: 0
+                    opacity: 0
+                    disabled: True
+                    width: 0
+
+
+                    FormInputSpinnerBlocker:
+                        id: patch_size_2_select
+                        label_key: 'patch_size_2_label_C2'
+                        hint_key: 'select_placeholder'
+
+                    FormInputSpinnerBlocker:
+                        id: input_size_2_select
+                        label_key: 'input_size_2_label_C2'
+                        hint_key: 'select_placeholder'
+
+
+
+
+                FormBlocker:
+                    label_key: 'epochs_label_C2'
+                    required: True
+
+
+                    FormGroup:
+                        spacing: dp(15)
+                        orientation: 'vertical'
+                        AnchorLayout:
+                            size_hint_y: None
+                            height: c2_epoch_input.height
+                            FormInput:
+                                id: c2_epoch_input
+                                input_filter: 'int'
+                                hint_text: app.lang.get('epochs_hint_C2')
+                                size_hint_x: 1
+                                text: '10'
+                                validation_type: 'int'
+                                min_value: 1
+                                max_value: 100
+                                allow_none: False
+                            LocalTouchBlocker:
+
+                        ErrorMessage:
+                            text: app.lang.get(c2_epoch_input.error_message).format(min_val=c2_epoch_input.min_value, max_val=c2_epoch_input.max_value)
+
+
+            BoxLayout:
+                size_hint_y: None
+                height: dp(40)
+                FormButton:
+                    id: training_button
+                    text: app.lang.get('start_training_button_C2')
+                    on_release: root.start_training()
+                    bg_color: COLORS['BLUE']
+
+
+            Separator:
+
+
+            FormGroup:
+                orientation: 'horizontal'
+                Label:
+                    size_hint_y: None
+                    pos_hint: {'top': 1}
+                    font_size: dp(17.6)
+                    color: COLORS['BLUE_BLACK']
+                    text_size: self.width, None
+                    height: self.texture_size[1] + dp(10)
+                    bold: True
+                    text: app.lang.get('training_status_label_C2')
+
+
+            LogViewerBox:
+                id: training_log_viewer
+                default_message: app.lang.get('training_status_placeholder_C2')
+
+
+
+            BoxLayout:
+                size_hint_y: None
+                height: dp(40)
+                FormButton:
+                    id: stop_training_button
+                    text: app.lang.get('stop_training_button_C2')
+                    on_release: root.stop_training()
+                    bg_color: COLORS['RED']
