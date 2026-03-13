@@ -27,4 +27,6 @@ jobs:
           uv pip install --system --index-strategy unsafe-best-match -r requirements_ci.txt
 
       - name: Run app
+        env:
+          KIVY_GL_BACKEND: angle_sdl2
         run: python main.py
