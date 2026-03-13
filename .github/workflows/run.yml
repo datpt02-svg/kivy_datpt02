@@ -17,16 +17,14 @@ jobs:
           python-version: "3.9"
           cache: "pip"
 
-      - name: Install CUDA Toolkit
-        uses: Jimver/cuda-toolkit@v0.2.19
-        with:
-          cuda: "12.4.0"
-          method: network
-
       - name: Install dependencies
+        shell: pwsh
         run: |
           pip install uv
-          uv pip install --system --index-strategy unsafe-best-match -r requirements.txt
+          # Bỏ các package cần compile CUDA (pycuda, cupy) vì không có GPU
+          $deps = Get-Content requirements.txt | Where-Object { $_ -notmatch "^pycuda|^cupy-cuda" }
+          $deps | Set-Content requirements_ci.txt
+          uv pip install --system --index-strategy unsafe-best-match -r requirements_ci.txt
 
       - name: Run app
         run: python main.py
